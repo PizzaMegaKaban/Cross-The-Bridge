@@ -33,6 +33,7 @@ public class UIManager : MonoBehaviour
     public GameObject characterSelectBtn;
     public GameObject menuButtons;
     public Text dailyRewardBtnText;
+    public GameObject levelCompleted;
     public GameObject dailyRewardBtn;
     public GameObject rewardUI;
     public GameObject soundOffBtn;
@@ -180,6 +181,7 @@ public class UIManager : MonoBehaviour
         tapToStart.SetActive(true);
         characterSelectBtn.SetActive(true);
         pauseButton.SetActive(false);
+        levelCompleted.SetActive(false);
 
     }
 
@@ -191,6 +193,7 @@ public class UIManager : MonoBehaviour
         tapToStart.SetActive(false);
         characterSelectBtn.SetActive(false);
         pauseButton.SetActive(true);
+        levelCompleted.SetActive(false);
 
     }
 
@@ -248,7 +251,8 @@ public class UIManager : MonoBehaviour
         blackPanel.SetActive(true);
         header.SetActive(true);
         title.gameObject.SetActive(false);
-        score.gameObject.SetActive(true);
+        score.gameObject.SetActive(false);
+        levelCompleted.SetActive(true);
         tapToStart.SetActive(false);
         menuButtons.SetActive(true);
         pauseButton.SetActive(false);
@@ -297,8 +301,10 @@ public class UIManager : MonoBehaviour
     public void HideSettingsUI()
     {
         mainCanvas.SetActive(true);
+        pauseMenuCanvas.SetActive(true);
         settingsCanvas.SetActive(false);
     }
+
 
     public void ShowStoreUI()
     {
