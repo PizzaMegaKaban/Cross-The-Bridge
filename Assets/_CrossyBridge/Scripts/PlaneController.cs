@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
 
 public class PlaneController : MonoBehaviour
 {
-
-
     public bool isTheLastPlane;
     public bool isMove = false;
     public bool isTheTopXAxis;
@@ -14,8 +13,11 @@ public class PlaneController : MonoBehaviour
     public bool stopMoving = false;
     public float planeMovingSpeed;
     public int movingAmplitude;
+    public bool isGameFinishBlock = false;
 
     bool isDestroying = false;
+
+    public static UnityEvent OnLevelFinished = new UnityEvent();
 
     // Use this for initialization
     void Start()
@@ -96,5 +98,16 @@ public class PlaneController : MonoBehaviour
             }         
         }
     }
-   
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (isGameFinishBlock && other.GetComponent<Character>() != null)
+        {
+            int finishedMovingPlanes = PlayerPrefs.GetInt("MovingPlanesInLevel", -1);
+            int finishedLevel = finishedMovingPlanes == -1 ? finishedMovingPlanes : (finishedMovingPlanes - PlayerPrefs.GetInt("DeltaPlatesForLevel", 2)) + 1;
+            if (finishedLevel != -1 && finishedLevel > PlayerPrefs.GetInt("LastUnlockedLevel", 1))
+                PlayerPrefs.SetInt("LastUnlockedLevel", finishedLevel);
+            OnLevelFinished.Invoke();
+        }
+    }
 }
