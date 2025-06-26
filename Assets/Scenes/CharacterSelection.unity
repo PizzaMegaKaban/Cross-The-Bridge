@@ -1554,7 +1554,7 @@ PrefabInstance:
     - target: {fileID: 11497630, guid: 723f4b5589fb4aa4e9935de29886c2f8, type: 3}
       propertyPath: characters.Array.data[1]
       value: 
-      objectReference: {fileID: 6845510505307602560, guid: adcc9c7b67c21f840a3c1a8a92215bc9,
+      objectReference: {fileID: 961643653601576122, guid: 34840fee9f51d9a4f8e8884cf93493e4,
         type: 3}
     - target: {fileID: 11497630, guid: 723f4b5589fb4aa4e9935de29886c2f8, type: 3}
       propertyPath: characters.Array.data[2]
@@ -1564,22 +1564,22 @@ PrefabInstance:
     - target: {fileID: 11497630, guid: 723f4b5589fb4aa4e9935de29886c2f8, type: 3}
       propertyPath: characters.Array.data[3]
       value: 
-      objectReference: {fileID: 3967701764597294040, guid: 8b34f24f97568de468b08c171026747d,
+      objectReference: {fileID: 2962012566605388762, guid: e631adda3bb693f40a28f11d9c265690,
         type: 3}
     - target: {fileID: 11497630, guid: 723f4b5589fb4aa4e9935de29886c2f8, type: 3}
       propertyPath: characters.Array.data[4]
       value: 
-      objectReference: {fileID: 6003686759952716774, guid: 6e4bf186fa9a21c4b8df43192ac1d53c,
+      objectReference: {fileID: 6958754508976680240, guid: 5f4f44f27a903db43ac1d82a7a725838,
         type: 3}
     - target: {fileID: 11497630, guid: 723f4b5589fb4aa4e9935de29886c2f8, type: 3}
       propertyPath: characters.Array.data[5]
       value: 
-      objectReference: {fileID: 6429340964340631868, guid: bbb317c2fb26031459e1ab699935c895,
+      objectReference: {fileID: 7093107574122741419, guid: dd682a5ebd0310c41b63c0d0e114a51c,
         type: 3}
     - target: {fileID: 11497630, guid: 723f4b5589fb4aa4e9935de29886c2f8, type: 3}
       propertyPath: characters.Array.data[6]
       value: 
-      objectReference: {fileID: 3790338080151370046, guid: e90d255c73c3428409d584de59e080eb,
+      objectReference: {fileID: 7602904252479726255, guid: 49db9399eef3f5946a4a31a22d5ddce0,
         type: 3}
     - target: {fileID: 11497630, guid: 723f4b5589fb4aa4e9935de29886c2f8, type: 3}
       propertyPath: characters.Array.data[7]
