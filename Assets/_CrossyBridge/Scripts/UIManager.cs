@@ -43,6 +43,7 @@ public class UIManager : MonoBehaviour
     public GameObject pauseButton;
     public GameObject pauseMenuCanvas;
 
+    public GameObject LevelSelect;
 
     [Header("Premium Features Only")]
     public GameObject watchForCoinsBtn;
@@ -64,7 +65,6 @@ public class UIManager : MonoBehaviour
     {
         GameManager.GameStateChanged += GameManager_GameStateChanged;
         ScoreManager.ScoreUpdated += OnScoreUpdated;
-       
     }
 
     void OnDisable()
@@ -366,6 +366,11 @@ public class UIManager : MonoBehaviour
     public void HideRewardUI()
     {
         rewardUI.SetActive(false);
+    }
+
+    public void ShowLevelsUI()
+    {
+        LevelSelect.SetActive(true);
     }
 
     public void ShowLeaderboardUI()
