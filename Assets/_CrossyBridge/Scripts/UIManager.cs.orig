@@ -40,10 +40,14 @@ public class UIManager : MonoBehaviour
     public GameObject soundOnBtn;
     public GameObject musicOnBtn;
     public GameObject musicOffBtn;
+<<<<<<< HEAD
     public GameObject pauseButton;
     public GameObject pauseMenuCanvas;
 
+||||||| 8083a88
+=======
     public GameObject LevelSelect;
+>>>>>>> a2c096637ade0d832844a45a40fa595244437b88
 
     [Header("Premium Features Only")]
     public GameObject watchForCoinsBtn;
