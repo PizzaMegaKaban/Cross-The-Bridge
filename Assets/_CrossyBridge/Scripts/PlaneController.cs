@@ -17,8 +17,6 @@ public class PlaneController : MonoBehaviour
 
     bool isDestroying = false;
 
-    public static UnityEvent OnLevelFinished = new UnityEvent();
-
     // Use this for initialization
     void Start()
     {
@@ -107,7 +105,7 @@ public class PlaneController : MonoBehaviour
             int finishedLevel = finishedMovingPlanes == -1 ? finishedMovingPlanes : (finishedMovingPlanes - PlayerPrefs.GetInt("DeltaPlatesForLevel", 2)) + 1;
             if (finishedLevel != -1 && finishedLevel > PlayerPrefs.GetInt("LastUnlockedLevel", 1))
                 PlayerPrefs.SetInt("LastUnlockedLevel", finishedLevel);
-            OnLevelFinished.Invoke();
+            EventManager.OnLevelFinished.Invoke();
         }
     }
 }
