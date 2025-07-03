@@ -121,11 +121,13 @@ public class GameManager : MonoBehaviour
     private int countMovingPlane = 0;
     private int movingPlaneNumberInLevel = -1;
     private bool movingPlanesLimitReached = false;
+    private bool stopBlock = false;
 
     // Use this for initialization
     void Start()
     {
-        PlaneController.OnLevelFinished.AddListener(GameOver);
+        EventManager.OnLevelFinished.AddListener(GameOver);
+        EventManager.BlockStopClick.AddListener(BlockStopped);
 
         PlayerPrefs.SetInt("DeltaPlatesForLevel", deltaPlatesForLevel);
         movingPlaneNumberInLevel = PlayerPrefs.GetInt("MovingPlanesInLevel", -1);
@@ -177,7 +179,13 @@ public class GameManager : MonoBehaviour
 
         SoundManager.Instance.PlayMusic(SoundManager.Instance.background);
     }
-	
+
+    private void BlockStopped()
+    {
+        stopBlock = true;
+        Debug.Log("GameManager - Canvas was clicked!");
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -211,8 +219,11 @@ public class GameManager : MonoBehaviour
 
         if (playerController.isRunning && !gameOver) //Not game over
         {
-            if (Input.GetMouseButtonDown(0))
+            // TODO срабатывается при просто нажатии на мышку
+            // if (Input.GetMouseButtonDown(0))
+            if (stopBlock)
             {
+                stopBlock = !stopBlock;
                 if (listIndex < listMovingPlane.Count) //Make sure the the listIndex not run out of the list
                 {
                     if (listMovingPlane[listIndex].GetComponent<PlaneController>().isVisible) //This moving plane is visible
@@ -238,7 +249,7 @@ public class GameManager : MonoBehaviour
                                         checkPosition = hit.transform.position.z; //Remember z position of this plane 
                                     }
                                 }
-                                
+
 
                                 float distance = Mathf.Abs(currentPlane.transform.position.z - checkPosition);
 
@@ -274,7 +285,7 @@ public class GameManager : MonoBehaviour
                                         checkPosition = hit.transform.position.x; //Remember x position of this plane
                                     }
                                 }
-                                
+
 
                                 float distance = Mathf.Abs(currentPlane.transform.position.x - checkPosition);
                                 if (distance <= minDeviation)//distance is less than minDeviation -> bonus coin
@@ -298,14 +309,15 @@ public class GameManager : MonoBehaviour
 
                         listIndex++; //Next moving plane
                     }
-                }            
+                }
             }
         }
     }
 
     private void OnDestroy()
     {
-        PlaneController.OnLevelFinished.RemoveListener(GameOver);
+        EventManager.OnLevelFinished.RemoveListener(GameOver);
+        EventManager.BlockStopClick.RemoveListener(BlockStopped);
     }
 
     public void StartGame()
