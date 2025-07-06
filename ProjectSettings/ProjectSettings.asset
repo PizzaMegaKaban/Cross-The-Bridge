@@ -158,7 +158,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Android: com.sglib.demogame
+    Android: com.44GameTech.CROSSTHEBRIDGE
     Standalone: unity.YourCompany.Crossy Bridge
     Tizen: com.sglib.demogame
     iPhone: com.sglib.demogame
