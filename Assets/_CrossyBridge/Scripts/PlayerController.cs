@@ -47,6 +47,7 @@ public class PlayerController : MonoBehaviour
         fixDistance = ((zPlaneScale / 2) - xPlaneScale) + (xPlaneScale / 2);
         zPlayerScale = playerChild.GetComponent<Renderer>().bounds.size.z;
 
+        var t = transform.position;
         StartCoroutine(MovePlayer());
     }
 	
@@ -126,7 +127,8 @@ public class PlayerController : MonoBehaviour
 
                 if (!gameManager.gameOver)
                 {
-                    gameManager.GameOver();
+                    gameManager.PreGameOver();
+                    //gameManager.GameOver();
                 }
 
                 // Fall down
@@ -156,9 +158,10 @@ public class PlayerController : MonoBehaviour
     IEnumerator CRPlayerFall(float delay)
     {
         // Fire event
-        PlayerDie();
+        // PlayerDie();
 
         yield return new WaitForSeconds(delay);
+        var trans = transform.position;
 
         SoundManager.Instance.PlaySound(SoundManager.Instance.gameOver);
 

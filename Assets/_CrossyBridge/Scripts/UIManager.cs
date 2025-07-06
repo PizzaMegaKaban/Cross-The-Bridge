@@ -43,6 +43,7 @@ public class UIManager : MonoBehaviour
     public GameObject pauseButton;
     public GameObject pauseMenuCanvas;
     public GameObject gameplayManagementCanvas;
+    public GameObject respawnUI;
 
     public GameObject LevelSelect;
 
@@ -126,7 +127,11 @@ public class UIManager : MonoBehaviour
         }
         else if (newState == GameState.PreGameOver)
         {
-            // Before game over, i.e. game potentially will be recovered
+            ShowRespawnUI();
+        }
+        else if (newState == GameState.Recovering)
+        {
+            // play recovering player animation
         }
         else if (newState == GameState.GameOver)
         {
@@ -440,6 +445,16 @@ public class UIManager : MonoBehaviour
     public void HideShareUI()
     {
         shareUI.SetActive(false);
+    }
+
+    public void ShowRespawnUI()
+    {
+        respawnUI.SetActive(true);
+    }
+
+    public void HideRespawnUI()
+    {
+        respawnUI.SetActive(false);
     }
 
     public void ToggleSound()

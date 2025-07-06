@@ -14,6 +14,7 @@ public enum GameState
     Playing,
     Paused,
     PreGameOver,
+    Recovering,
     GameOver
 }
 
@@ -324,6 +325,12 @@ public class GameManager : MonoBehaviour
     {
         SelectLevel(PlayerPrefs.GetInt("MovingPlanesInLevel", -1));
         GameState = GameState.Playing;
+    }
+
+    public void PreGameOver()
+    {
+        gameOver = true;
+        GameState = GameState.PreGameOver;
     }
 
     public void GameOver()
