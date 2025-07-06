@@ -74,6 +74,9 @@ public class GameManager : MonoBehaviour
     public float limitMovingPlaneFrequency = 0.5f;
     [Range(0f, 1f)]
     public float goldFrequency;
+    public int deltaPlatesForLevel = 2;
+    // public int movingPlaneNumberInLevel = 5;
+
 
     [Header("Object Preferences")]
     public PlayerController playerController;
@@ -95,6 +98,7 @@ public class GameManager : MonoBehaviour
     public int listIndex = 0;
     [HideInInspector]
     public bool gameOver = false;
+    public Material backgroundMaterial;
 
     private GameObject normalPlane;
     private GameObject lastForwardPlane;
@@ -115,11 +119,19 @@ public class GameManager : MonoBehaviour
     private int countPlane = 0;
     private int turn = 1;
     private int countMovingPlane = 0;
- 
+    private int movingPlaneNumberInLevel = -1;
+    private bool movingPlanesLimitReached = false;
+    private bool stopBlock = false;
 
     // Use this for initialization
     void Start()
     {
+        EventManager.OnLevelFinished.AddListener(GameOver);
+        EventManager.BlockStopClick.AddListener(BlockStopped);
+
+        PlayerPrefs.SetInt("DeltaPlatesForLevel", deltaPlatesForLevel);
+        movingPlaneNumberInLevel = PlayerPrefs.GetInt("MovingPlanesInLevel", -1);
+        SelectLevel(movingPlaneNumberInLevel);
         GameState = GameState.Prepare;
 
         //PlayerPrefs.DeleteAll();
@@ -167,7 +179,13 @@ public class GameManager : MonoBehaviour
 
         SoundManager.Instance.PlayMusic(SoundManager.Instance.background);
     }
-	
+
+    private void BlockStopped()
+    {
+        stopBlock = true;
+        Debug.Log("GameManager - Canvas was clicked!");
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -201,8 +219,11 @@ public class GameManager : MonoBehaviour
 
         if (playerController.isRunning && !gameOver) //Not game over
         {
-            if (Input.GetMouseButtonDown(0))
+            // TODO срабатывается при просто нажатии на мышку
+            // if (Input.GetMouseButtonDown(0))
+            if (stopBlock)
             {
+                stopBlock = !stopBlock;
                 if (listIndex < listMovingPlane.Count) //Make sure the the listIndex not run out of the list
                 {
                     if (listMovingPlane[listIndex].GetComponent<PlaneController>().isVisible) //This moving plane is visible
@@ -228,7 +249,7 @@ public class GameManager : MonoBehaviour
                                         checkPosition = hit.transform.position.z; //Remember z position of this plane 
                                     }
                                 }
-                                
+
 
                                 float distance = Mathf.Abs(currentPlane.transform.position.z - checkPosition);
 
@@ -264,7 +285,7 @@ public class GameManager : MonoBehaviour
                                         checkPosition = hit.transform.position.x; //Remember x position of this plane
                                     }
                                 }
-                                
+
 
                                 float distance = Mathf.Abs(currentPlane.transform.position.x - checkPosition);
                                 if (distance <= minDeviation)//distance is less than minDeviation -> bonus coin
@@ -288,13 +309,20 @@ public class GameManager : MonoBehaviour
 
                         listIndex++; //Next moving plane
                     }
-                }            
+                }
             }
         }
     }
 
+    private void OnDestroy()
+    {
+        EventManager.OnLevelFinished.RemoveListener(GameOver);
+        EventManager.BlockStopClick.RemoveListener(BlockStopped);
+    }
+
     public void StartGame()
     {
+        SelectLevel(PlayerPrefs.GetInt("MovingPlanesInLevel", -1));
         GameState = GameState.Playing;
     }
 
@@ -321,7 +349,8 @@ public class GameManager : MonoBehaviour
     {
         while (!gameOver)
         {
-            if (transform.childCount < totalPlaneOnScene)
+            if (transform.childCount < totalPlaneOnScene && !movingPlanesLimitReached)
+            // if (transform.childCount < totalPlaneOnScene)
             {
                 countPlane++;
 
@@ -429,9 +458,10 @@ public class GameManager : MonoBehaviour
     void GeneratePlane(bool isForwardSide)
     {
         float movingPlaneProbability = Random.Range(0f, 1f);
-        if (movingPlaneProbability <= movingPlaneFrequency && countPlane != 0 && countPlane % 2 == 0) //Create moving plane
-        {           
-            //How many moving plane is created 
+        if (movingPlaneProbability <= movingPlaneFrequency && countPlane != 0 && countPlane % 2 == 0 && 
+            ((movingPlaneNumberInLevel != -1 && countMovingPlane < movingPlaneNumberInLevel) || movingPlaneNumberInLevel == -1)) //Create moving plane
+        {
+            //How many moving plane is created
             int movingPlaneNumber = (countMovingPlane / bridgeNumber) + 1;
 
             ConfigMovingPlaneAppearanceProbability(countMovingPlane);
@@ -494,6 +524,17 @@ public class GameManager : MonoBehaviour
                     listMovingPlane.Add(currentPlane);
                 }
             }
+        }
+        else if (movingPlaneNumberInLevel != -1 && countMovingPlane >= movingPlaneNumberInLevel)
+        {
+            var planeQuaternion = isForwardSide ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, -90, 0);
+
+            currentPlane = (GameObject)Instantiate(normalPlane, planePosition, planeQuaternion);
+            planePosition = currentPlane.transform.position + forwardDirection * zPlaneScale;
+
+            currentPlane.GetComponent<PlaneController>().isGameFinishBlock = true;
+            currentPlane.GetComponent<BoxCollider>().isTrigger = true;
+            movingPlanesLimitReached = true;
         }
         else //Create normal plane
         {
@@ -560,6 +601,68 @@ public class GameManager : MonoBehaviour
             {
                 movingPlaneFrequency -= amplitudeDecreases;
             }
+        }
+    }
+
+    public void SelectLevel(int level = -1, bool roughtLevelNumber = false)
+    {
+        int selectedLevel = roughtLevelNumber ? level : (level == -1 ? level : level - PlayerPrefs.GetInt("DeltaPlatesForLevel", 2));
+
+        (Color top, Color bottom) = GetGradientColorByLevel(selectedLevel);
+
+        backgroundMaterial.SetColor("_TopColor", top);
+        backgroundMaterial.SetColor("_BottomColor", bottom);
+    }
+
+    private (Color topColor, Color bottomColor) GetGradientColorByLevel(int level = -1)
+    {
+        if (level == -1)
+        {
+            ColorUtility.TryParseHtmlString("#009CFF", out Color topColor);
+            ColorUtility.TryParseHtmlString("#39B4FF", out Color bottomColor);
+            return (topColor, bottomColor);
+        } else
+        {
+            int firstDigit = level / 10;
+            Color topColor = GetGolorByNumber(firstDigit);
+
+            int secondDigit = level % 10;
+            Color bottomColor = GetGolorByNumber(secondDigit);
+
+            return (topColor, bottomColor);
+        }
+    }
+
+    private Color GetGolorByNumber(int number)
+    {
+        switch (number)
+        {
+            case 0:
+                return Color.red;
+            case 1:
+                return Color.green;
+            case 2:
+                return Color.blue;
+            case 3:
+                ColorUtility.TryParseHtmlString("#FFA500", out Color orangeColor);
+                return orangeColor;
+            case 4:
+                ColorUtility.TryParseHtmlString("#800080", out Color purpleColor);
+                return purpleColor;
+            case 5:
+                return Color.yellow;
+            case 6:
+                return Color.cyan;
+            case 7:
+                return Color.magenta;
+            case 8:
+                ColorUtility.TryParseHtmlString("#008080", out Color tealColor);
+                return tealColor;
+            case 9:
+                ColorUtility.TryParseHtmlString("#000080", out Color navyColor);
+                return navyColor;
+            default:
+                return Color.white;
         }
     }
 }

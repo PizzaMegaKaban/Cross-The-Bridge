@@ -42,7 +42,9 @@ public class UIManager : MonoBehaviour
     public GameObject musicOffBtn;
     public GameObject pauseButton;
     public GameObject pauseMenuCanvas;
+    public GameObject gameplayManagementCanvas;
 
+    public GameObject LevelSelect;
 
     [Header("Premium Features Only")]
     public GameObject watchForCoinsBtn;
@@ -64,7 +66,6 @@ public class UIManager : MonoBehaviour
     {
         GameManager.GameStateChanged += GameManager_GameStateChanged;
         ScoreManager.ScoreUpdated += OnScoreUpdated;
-       
     }
 
     void OnDisable()
@@ -153,6 +154,7 @@ public class UIManager : MonoBehaviour
         dailyRewardBtn.SetActive(false);
         settingsCanvas.SetActive(false);
         pauseButton.SetActive(false);
+        gameplayManagementCanvas.SetActive(false);
 
 
         // Enable or disable premium stuff
@@ -182,7 +184,7 @@ public class UIManager : MonoBehaviour
         characterSelectBtn.SetActive(true);
         pauseButton.SetActive(false);
         levelCompleted.SetActive(false);
-
+        gameplayManagementCanvas.SetActive(false);
     }
 
     public void ShowGameUI()
@@ -194,11 +196,12 @@ public class UIManager : MonoBehaviour
         characterSelectBtn.SetActive(false);
         pauseButton.SetActive(true);
         levelCompleted.SetActive(false);
-
+        gameplayManagementCanvas.SetActive(true);
     }
 
     public void PauseGame()
     {
+        Debug.Log("Сработала пауза!");
         if (!isPaused)
         {
             Time.timeScale = 0f;
@@ -226,17 +229,20 @@ public class UIManager : MonoBehaviour
         pauseMenuCanvas.SetActive(false);
         mainCanvas.SetActive(true); // Опционально, если нужно скрыть основной интерфейс
         settingsCanvas.SetActive(true);
+        gameplayManagementCanvas.SetActive(false);
     }
 
 
     void ShowPauseMenu()
     {
         pauseMenuCanvas.SetActive(true);
+        gameplayManagementCanvas.SetActive(false);
     }
 
     void HidePauseMenu()
     {
         pauseMenuCanvas.SetActive(false);
+        gameplayManagementCanvas.SetActive(true);
     }
 
     public void ReturnToMainMenu()
@@ -256,6 +262,7 @@ public class UIManager : MonoBehaviour
         tapToStart.SetActive(false);
         menuButtons.SetActive(true);
         pauseButton.SetActive(false);
+        gameplayManagementCanvas.SetActive(false);
 
 
         //
@@ -296,6 +303,7 @@ public class UIManager : MonoBehaviour
     {
         mainCanvas.SetActive(false);
         settingsCanvas.SetActive(true);
+        gameplayManagementCanvas.SetActive(false);
     }
 
     public void HideSettingsUI()
@@ -303,6 +311,7 @@ public class UIManager : MonoBehaviour
         mainCanvas.SetActive(true);
         pauseMenuCanvas.SetActive(true);
         settingsCanvas.SetActive(false);
+        gameplayManagementCanvas.SetActive(true);
     }
 
 
@@ -310,12 +319,14 @@ public class UIManager : MonoBehaviour
     {
         mainCanvas.SetActive(false);
         storeCanvas.SetActive(true);
+        gameplayManagementCanvas.SetActive(false);
     }
 
     public void HideStoreUI()
     {
         mainCanvas.SetActive(true);
         storeCanvas.SetActive(false);
+        gameplayManagementCanvas.SetActive(false);
     }
 
     public void StartGame()
@@ -366,6 +377,11 @@ public class UIManager : MonoBehaviour
     public void HideRewardUI()
     {
         rewardUI.SetActive(false);
+    }
+
+    public void ShowLevelsUI()
+    {
+        LevelSelect.SetActive(true);
     }
 
     public void ShowLeaderboardUI()
