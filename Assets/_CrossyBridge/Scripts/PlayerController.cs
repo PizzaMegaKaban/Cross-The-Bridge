@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using SgLib;
+using System.Collections.Generic;
+using System.Linq;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,8 +13,11 @@ public class PlayerController : MonoBehaviour
     //Player moving speed
     public float rotatingSpeed = 250f;
     //Player rotating speed
+    public float flickerDuration = 1f;
+    public float flickerInterval = 0.25f;
 
     [Header("Object Preferences")]
+    public UIManager uIManager;
     public GameManager gameManager;
     public GameObject playerChild;
     public ParticleSystem particle;
@@ -20,6 +25,7 @@ public class PlayerController : MonoBehaviour
     public Vector3 dir;
     [HideInInspector]
     public bool isRunning;
+    public bool isRespawnGoing = false;
 
     private Vector3 raycastPoint;
     private bool isRotateLeft;
@@ -28,14 +34,31 @@ public class PlayerController : MonoBehaviour
     private float zPlayerScale;
     private float zPlaneScale;
     private float xPlaneScale;
-
+    private bool enableRespawn;
 
     void Start()
     {
+        EventManager.OnRespawnPerform.AddListener(RespawnPlayer);
+        EventManager.OnSetPlayerOnPlane.AddListener(SetPlayerOnPlane);
+
+        enableRespawn = true;
+        isRespawnGoing = false;
+
         // Change the character to the selected one
         GameObject currentCharacter = CharacterManager.Instance.characters[CharacterManager.Instance.CurrentCharacterIndex];
-        Mesh charMesh = currentCharacter.GetComponent<MeshFilter>().sharedMesh;
-        Material charMaterial = currentCharacter.GetComponent<Renderer>().sharedMaterial;
+        Character[] gameCars = gameObject.GetComponentsInChildren<Character>(true);
+
+        for (int i = 0; i < CharacterManager.Instance.characters.Length; i++)
+        {
+            if (i == CharacterManager.Instance.CurrentCharacterIndex)
+                gameCars[i].gameObject.SetActive(true);
+            else
+                gameCars[i].gameObject.SetActive(false);
+        }
+
+        var currentCharacterColoring = currentCharacter.GetComponentInChildren<Coloring>().gameObject;
+        Mesh charMesh = currentCharacterColoring.GetComponent<MeshFilter>().sharedMesh;
+        Material charMaterial = currentCharacterColoring.GetComponent<Renderer>().sharedMaterial;
         playerChild.GetComponent<MeshFilter>().mesh = charMesh;
         playerChild.GetComponent<MeshRenderer>().material = charMaterial;
 
@@ -69,14 +92,15 @@ public class PlayerController : MonoBehaviour
             Debug.DrawLine(transform.position + raycastPoint, transform.position + raycastPoint + Vector3.down * 5f, Color.green);
 
 
-            Ray raydown = new Ray(transform.position + raycastPoint, Vector3.down);
+            // Ray raydown = new Ray(transform.position + raycastPoint, Vector3.down);
             RaycastHit hit;
-            if (Physics.Raycast(raydown, out hit, 5f)) //Still alive
+            if (Physics.Raycast(transform.position + raycastPoint, Vector3.down, out hit, 5f, LayerMask.GetMask("Default"), QueryTriggerInteraction.Ignore)) //Still alive
             {
                 if (!gameManager.gameOver)
                 {
-                    if (hit.collider.GetComponent<PlaneController>().isTheLastPlane) //This is the last plane, turn right here
+                    if (hit.collider.TryGetComponent<PlaneController>(out PlaneController planeController) && planeController.isTheLastPlane) //This is the last plane, turn right here
                     {
+                        Debug.Log($"PlayerController {planeController}");
                         if (dir == Vector3.forward) //Player moving forward -> turn and rotate left
                         {
                             isRotateForward = false; //Reset
@@ -127,14 +151,31 @@ public class PlayerController : MonoBehaviour
 
                 if (!gameManager.gameOver)
                 {
-                    gameManager.PreGameOver();
-                    //gameManager.GameOver();
+                    Debug.Log($"LastPassedNormalPlane = {PlayerPrefs.GetInt("LastPassedNormalPlane")}");
+                    Rigidbody rb = playerChild.GetComponent<Rigidbody>();
+                    Debug.Log($"IsKinematic = {rb.isKinematic}");
+                    Debug.Log($"Velocity = {rb.velocity}");
+                    if (enableRespawn)
+                    {
+                        PlayerPrefs.SetInt("LastCarDir", dir == Vector3.forward ? 0 : 1);
+                        enableRespawn = !enableRespawn;
+                        gameManager.PreGameOver();
+                    } else
+                    {
+                        gameManager.GameOver();
+                    }
                 }
 
                 // Fall down
                 StartCoroutine(CRPlayerFall(0.5f));
             }
         }
+    }
+
+    void OnDestroy()
+    {
+        EventManager.OnRespawnPerform.RemoveListener(RespawnPlayer);
+        EventManager.OnSetPlayerOnPlane.RemoveListener(SetPlayerOnPlane);
     }
 
     IEnumerator MovePlayer()
@@ -192,5 +233,77 @@ public class PlayerController : MonoBehaviour
             transform.eulerAngles = new Vector3(0, 0, 0);
         }
 
+    }
+
+    private void SetPlayerOnPlane()
+    {
+        isRespawnGoing = true;
+        // получаем последний блок, на котором был пользователь
+        int lastPassedNormalPlane = PlayerPrefs.GetInt("LastPassedNormalPlane", 1);
+        // получаем список всех NormalPlane, которые у нас есть сейчас
+        var normalPlanes = gameManager.GetComponentsInChildren<PlaneController>();
+        // выбрасываем из полученной коллекции normalPlanes с порядковым номером -1
+        normalPlanes = normalPlanes.Where(np => np.planeOrderNumber != -1).ToArray();
+        // получаем NormalPlane с порядковым номером, который больше на 1 того, что мы получили в п. 1
+        var normalPlaneForSpawn = normalPlanes.FirstOrDefault(np => np.planeOrderNumber == lastPassedNormalPlane + 1);
+        // если дальше только последний блок - берём тот блок, где мы упали
+        if (normalPlaneForSpawn == null)
+            normalPlaneForSpawn = normalPlanes.FirstOrDefault(np => np.planeOrderNumber == lastPassedNormalPlane);
+        // присваиваем transform.position этого блока родительскому компоненту нашей машины
+        Vector3 normalPlaneForSpawnPosition = normalPlaneForSpawn.transform.position;
+        normalPlaneForSpawnPosition.y = -0.5f;
+        Debug.Log($"normalPlaneForSpawnPosition = {normalPlaneForSpawnPosition}");
+        gameObject.transform.position = normalPlaneForSpawnPosition;
+        gameObject.transform.rotation = normalPlaneForSpawn.transform.rotation;
+        // изменяем rigidbody для машины
+        //Rigidbody rb = playerChild.GetComponent<Rigidbody>();
+        //rb.isKinematic = true;
+        //rb.velocity = new Vector3(0f, 0f, 0f);
+        // обнуляем transform.position для нашей машины
+        var currentCharacterCar = gameObject.GetComponentInChildren<Character>(includeInactive: false);
+        // currentCharacterCar.gameObject.transform.position = new Vector3(0f, 0f, 0f);
+        currentCharacterCar.gameObject.transform.position = normalPlaneForSpawnPosition;
+        currentCharacterCar.gameObject.transform.rotation = normalPlaneForSpawn.transform.rotation;
+
+        EventManager.OnSetCameraByPlayer.Invoke(currentCharacterCar.gameObject.transform.position);
+
+        StartCoroutine(FlickerCoroutine());
+    }
+
+    private IEnumerator FlickerCoroutine()
+    {
+        GameObject characterCarGO = gameObject.GetComponentInChildren<Character>(includeInactive: false).gameObject;
+        float elapsed = 0f;
+
+        while (elapsed < flickerDuration)
+        {
+            ToggleRenderers(false, characterCarGO);
+            yield return new WaitForSeconds(flickerInterval / 2f);
+
+            ToggleRenderers(true, characterCarGO);
+            yield return new WaitForSeconds(flickerInterval / 2f);
+
+            elapsed += flickerInterval;
+        }
+
+        // Ensure all renderers are re-enabled at the end
+        ToggleRenderers(true, characterCarGO);
+    }
+
+    private void ToggleRenderers(bool state, GameObject characterCarGO)
+    {
+        Renderer[] childRenderers = characterCarGO.GetComponentsInChildren<Renderer>(true);
+        foreach (var renderer in childRenderers)
+            renderer.enabled = state;
+    }
+
+    private void RespawnPlayer()
+    {
+        isRespawnGoing = false;
+        uIManager.HideCountdown();
+        // переключаем GameState в Playing
+        gameManager.ContinueGame();
+        dir = PlayerPrefs.GetInt("LastCarDir", 0) == 0 ? Vector3.forward : Vector3.left;
+        StartCoroutine(MovePlayer());
     }
 }

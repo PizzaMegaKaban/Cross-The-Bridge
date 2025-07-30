@@ -81,7 +81,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 5c472f328e810ad4680e3aa743d35ae6,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1588066396962892842, guid: 5c472f328e810ad4680e3aa743d35ae6,
         type: 3}
@@ -172,6 +172,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 388d7603184554ba3bfef3f7784ee10b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterSequenceNumber: 0
+  characterSequenceNumber: 9
   price: 0
   isFree: 0

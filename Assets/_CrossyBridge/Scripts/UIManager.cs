@@ -44,8 +44,11 @@ public class UIManager : MonoBehaviour
     public GameObject pauseMenuCanvas;
     public GameObject gameplayManagementCanvas;
     public GameObject respawnUI;
+    public GameObject countdownUI;
+    public GameObject timerSlider;
 
-    public GameObject LevelSelect;
+    public GameObject levelSelect;
+    public GameObject levelTimer;
 
     [Header("Premium Features Only")]
     public GameObject watchForCoinsBtn;
@@ -137,6 +140,10 @@ public class UIManager : MonoBehaviour
         {
             Invoke("ShowGameOverUI", 0.5f);
         }
+        else if (newState == GameState.LevelPassed)
+        {
+            Invoke("ShowLevelPassedUI", 0.5f);
+        }
     }
 
     void OnScoreUpdated(int newScore)
@@ -160,7 +167,8 @@ public class UIManager : MonoBehaviour
         settingsCanvas.SetActive(false);
         pauseButton.SetActive(false);
         gameplayManagementCanvas.SetActive(false);
-
+        timerSlider.SetActive(false);
+        levelTimer.SetActive(false);
 
         // Enable or disable premium stuff
         //bool enablePremium = PremiumFeaturesManager.Instance.enablePremiumFeatures;
@@ -190,6 +198,8 @@ public class UIManager : MonoBehaviour
         pauseButton.SetActive(false);
         levelCompleted.SetActive(false);
         gameplayManagementCanvas.SetActive(false);
+        timerSlider.SetActive(false);
+        levelTimer.SetActive(false);
     }
 
     public void ShowGameUI()
@@ -202,6 +212,8 @@ public class UIManager : MonoBehaviour
         pauseButton.SetActive(true);
         levelCompleted.SetActive(false);
         gameplayManagementCanvas.SetActive(true);
+        timerSlider.SetActive(true);
+        levelTimer.SetActive(true);
     }
 
     public void PauseGame()
@@ -262,13 +274,13 @@ public class UIManager : MonoBehaviour
         blackPanel.SetActive(true);
         header.SetActive(true);
         title.gameObject.SetActive(false);
-        score.gameObject.SetActive(false);
-        levelCompleted.SetActive(true);
+        score.gameObject.SetActive(true);
         tapToStart.SetActive(false);
         menuButtons.SetActive(true);
         pauseButton.SetActive(false);
         gameplayManagementCanvas.SetActive(false);
-
+        timerSlider.SetActive(false);
+        levelTimer.SetActive(false);
 
         //
         watchForCoinsBtn.gameObject.SetActive(true);
@@ -290,6 +302,54 @@ public class UIManager : MonoBehaviour
         watchForCoinsBtn.SetActive(true);
         watchForCoinsBtn.GetComponent<Animator>().SetTrigger("activate");
         #endif
+
+        // Not showing the daily reward button if the feature is disabled
+        if (!DailyRewardController.Instance.disable)
+        {
+            dailyRewardBtn.SetActive(true);
+        }
+
+        //if (IsPremiumFeaturesEnabled())
+        //    ShowShareUI();
+
+
+        // Blur the background
+    }
+
+    public void ShowLevelPassedUI()
+    {
+        blackPanel.SetActive(true);
+        header.SetActive(true);
+        title.gameObject.SetActive(false);
+        score.gameObject.SetActive(false);
+        levelCompleted.SetActive(true);
+        tapToStart.SetActive(false);
+        menuButtons.SetActive(true);
+        pauseButton.SetActive(false);
+        gameplayManagementCanvas.SetActive(false);
+        timerSlider.SetActive(false);
+        levelTimer.SetActive(false);
+
+        //
+        watchForCoinsBtn.gameObject.SetActive(true);
+        //
+        settingsCanvas.SetActive(false);
+
+        // Only show "watch for coins button" if a rewarded ad is loaded and premium features are enabled
+#if EASY_MOBILE
+        // if (gameManager.enablePremiumFeatures && AdDisplayer.Instance.CanShowRewardedAd() && AdDisplayer.Instance.watchAdToEarnCoins)
+        // {
+        //     watchForCoinsBtn.SetActive(true);
+        //     watchForCoinsBtn.GetComponent<Animator>().SetTrigger("activate");
+        // }
+        // else
+        // {
+        //     watchForCoinsBtn.SetActive(false);
+        // }
+
+        watchForCoinsBtn.SetActive(true);
+        watchForCoinsBtn.GetComponent<Animator>().SetTrigger("activate");
+#endif
 
         // Not showing the daily reward button if the feature is disabled
         if (!DailyRewardController.Instance.disable)
@@ -386,7 +446,7 @@ public class UIManager : MonoBehaviour
 
     public void ShowLevelsUI()
     {
-        LevelSelect.SetActive(true);
+        levelSelect.SetActive(true);
     }
 
     public void ShowLeaderboardUI()
@@ -449,11 +509,15 @@ public class UIManager : MonoBehaviour
 
     public void ShowRespawnUI()
     {
+        // gameplayManagementCanvas.SetActive(false);
+        blackPanel.SetActive(true);
         respawnUI.SetActive(true);
     }
 
     public void HideRespawnUI()
     {
+        // gameplayManagementCanvas.SetActive(true);
+        blackPanel.SetActive(false);
         respawnUI.SetActive(false);
     }
 
@@ -524,4 +588,17 @@ public class UIManager : MonoBehaviour
     //{
     //    return PremiumFeaturesManager.Instance != null && PremiumFeaturesManager.Instance.enablePremiumFeatures;
     //}
+
+    public void CallRespawn()
+    {
+        HideRespawnUI();
+        countdownUI.SetActive(true);
+        score.gameObject.SetActive(false);
+    }
+
+    public void HideCountdown()
+    {
+        countdownUI.SetActive(false);
+        score.gameObject.SetActive(true);
+    }
 }

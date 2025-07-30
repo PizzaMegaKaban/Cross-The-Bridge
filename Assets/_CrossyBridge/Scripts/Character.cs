@@ -7,6 +7,7 @@ public class Character : MonoBehaviour
     public bool isFree = false;
 
     private string carID;
+
     public bool IsUnlocked
     {
         get
