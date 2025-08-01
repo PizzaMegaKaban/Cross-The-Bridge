@@ -273,8 +273,8 @@ public class UIManager : MonoBehaviour
     {
         blackPanel.SetActive(true);
         header.SetActive(true);
-        title.gameObject.SetActive(false);
-        title.gameObject.SetActive(false);
+        //title.gameObject.SetActive(false);
+        //title.gameObject.SetActive(false);
         score.gameObject.SetActive(true);
         tapToStart.SetActive(false);
         menuButtons.SetActive(true);
@@ -321,7 +321,6 @@ public class UIManager : MonoBehaviour
     {
         blackPanel.SetActive(true);
         header.SetActive(true);
-        title.gameObject.SetActive(false);
         //title.gameObject.SetActive(false);
         score.gameObject.SetActive(false);
         levelCompleted.SetActive(true);
