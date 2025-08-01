@@ -14,13 +14,14 @@ public class PlaneController : MonoBehaviour
     public float planeMovingSpeed;
     public int movingAmplitude;
     public bool isGameFinishBlock = false;
+    public int planeOrderNumber = -1;
+    public int progressNumber = -1;
 
     bool isDestroying = false;
 
     // Use this for initialization
     void Start()
     {
-
         if (isMove)
         {
             StartCoroutine(MovePlane());
@@ -94,18 +95,6 @@ public class PlaneController : MonoBehaviour
 
                 isTheTopZAxis = !isTheTopZAxis;
             }         
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (isGameFinishBlock && other.GetComponent<Character>() != null)
-        {
-            int finishedMovingPlanes = PlayerPrefs.GetInt("MovingPlanesInLevel", -1);
-            int finishedLevel = finishedMovingPlanes == -1 ? finishedMovingPlanes : (finishedMovingPlanes - PlayerPrefs.GetInt("DeltaPlatesForLevel", 2)) + 1;
-            if (finishedLevel != -1 && finishedLevel > PlayerPrefs.GetInt("LastUnlockedLevel", 1))
-                PlayerPrefs.SetInt("LastUnlockedLevel", finishedLevel);
-            EventManager.OnLevelFinished.Invoke();
         }
     }
 }

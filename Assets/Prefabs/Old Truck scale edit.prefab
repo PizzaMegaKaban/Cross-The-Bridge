@@ -83,6 +83,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Old Truck scale edit
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c50a79d3d25406c44b9ed24e2c65f230,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4869430771441957871, guid: c50a79d3d25406c44b9ed24e2c65f230,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -105,6 +110,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 915980741764977981}
+    - targetCorrespondingSourceObject: {fileID: 6153635975400282489, guid: c50a79d3d25406c44b9ed24e2c65f230,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6376193046113426640}
   m_SourcePrefab: {fileID: 100100000, guid: c50a79d3d25406c44b9ed24e2c65f230, type: 3}
 --- !u!1 &961643653601576122 stripped
 GameObject:
@@ -145,6 +154,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 388d7603184554ba3bfef3f7784ee10b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterSequenceNumber: 0
+  characterSequenceNumber: 1
   price: 0
   isFree: 0
+--- !u!1 &6124617659434606738 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6153635975400282489, guid: c50a79d3d25406c44b9ed24e2c65f230,
+    type: 3}
+  m_PrefabInstance: {fileID: 115149787726313963}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6376193046113426640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6124617659434606738}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b11fa4595f174749892636d699e1adc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

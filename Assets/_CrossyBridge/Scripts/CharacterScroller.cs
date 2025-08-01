@@ -50,7 +50,7 @@ public class CharacterScroller : MonoBehaviour
         lockColor.a = 0;    // need this for later setting material colors to work
 
         int currentCharacterIndex = CharacterManager.Instance.CurrentCharacterIndex;
-        currentCharacterIndex = Mathf.Clamp(currentCharacterIndex, 0, CharacterManager.Instance.characters.Length - 1); 
+        currentCharacterIndex = Mathf.Clamp(currentCharacterIndex, 0, CharacterManager.Instance.characters.Length - 1);
 
         for (int i = 0; i < CharacterManager.Instance.characters.Length; i++)
         {
@@ -75,6 +75,7 @@ public class CharacterScroller : MonoBehaviour
 
             // set as child of this object
             character.transform.parent = transform;
+            character.SetActive(true);
         }
 
         // Highlight current character
@@ -318,7 +319,8 @@ public class CharacterScroller : MonoBehaviour
         bool unlockSucceeded = currentCharacter.GetComponent<Character>().Unlock();
         if (unlockSucceeded)
         {
-            currentCharacter.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
+            GameObject coloringComponent = currentCharacter.GetComponentInChildren<Coloring>().gameObject;
+            coloringComponent.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
             unlockButton.gameObject.SetActive(false);
             selectButon.gameObject.SetActive(true);
         }

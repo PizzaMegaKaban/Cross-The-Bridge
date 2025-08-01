@@ -14,7 +14,9 @@ public enum GameState
     Playing,
     Paused,
     PreGameOver,
-    GameOver
+    Recovering,
+    GameOver,
+    LevelPassed
 }
 
 public class GameManager : MonoBehaviour
@@ -39,13 +41,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public int MaxProgressBlock
+    {
+        get
+        {
+            return currentProgressNumber;
+        }
+    }
+
     private GameState _gameState = GameState.Prepare;
 
     [Header("Check to enable premium features (require EasyMobile plugin)")]
     public bool enablePremiumFeatures = true;
 
     [Header("Gameplay Config")]
-    public int initialPlanes = 5;
+    public int initialPlanes = 1;
     //How many plane you create when start game
     public int totalPlaneOnScene = 9;
     //How many plane you have on scene
@@ -55,7 +65,7 @@ public class GameManager : MonoBehaviour
     //Max plane's number of path
     public int maxFluctuationRange = 6;
     //Max fluctuation range of plane
-    public int minFluctuationRange = 3;
+    public int minFluctuationRange = 4;
     //Min fluctuation range of plane
     public float minPlaneSpeed = 0.45f;
     //Min plane speed
@@ -99,6 +109,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public bool gameOver = false;
     public Material backgroundMaterial;
+    public ParticleSystem confettiParticle;
 
     private GameObject normalPlane;
     private GameObject lastForwardPlane;
@@ -122,12 +133,19 @@ public class GameManager : MonoBehaviour
     private int movingPlaneNumberInLevel = -1;
     private bool movingPlanesLimitReached = false;
     private bool stopBlock = false;
+    private int lastGeneratedBlockNumber = 1;
+    private int currentProgressNumber = 1;
+
+    // удалить
+    //private int planeNumX = 0;
+    //private int planeNumY = 0;
 
     // Use this for initialization
     void Start()
     {
-        EventManager.OnLevelFinished.AddListener(GameOver);
+        EventManager.OnLevelFinished.AddListener(LevelPassed);
         EventManager.BlockStopClick.AddListener(BlockStopped);
+        EventManager.OnBlackPanelMissClick.AddListener(SkipRespawning);
 
         PlayerPrefs.SetInt("DeltaPlatesForLevel", deltaPlatesForLevel);
         movingPlaneNumberInLevel = PlayerPrefs.GetInt("MovingPlanesInLevel", -1);
@@ -160,6 +178,11 @@ public class GameManager : MonoBehaviour
             currentPlane = (GameObject)Instantiate(normalPlane, planePosition, Quaternion.Euler(0, 0, 0));
             planePosition = currentPlane.transform.position + forwardDirection * zPlaneScale;
             currentPlane.transform.SetParent(transform);
+            Debug.Log($"165 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
+            currentPlane.GetComponent<PlaneController>().planeOrderNumber = lastGeneratedBlockNumber++;
+            currentPlane.GetComponent<PlaneController>().progressNumber = ++currentProgressNumber;
+
+            //currentPlane.GetComponent<BoxCollider>().isTrigger = true;
         }
 
         Vector3 planeBehindPosition = firstPlane.transform.position + Vector3.back * zPlaneScale;
@@ -168,10 +191,12 @@ public class GameManager : MonoBehaviour
             GameObject planeBehind = Instantiate(normalPlane, planeBehindPosition, Quaternion.Euler(0, 0, 0)) as GameObject;
             planeBehind.transform.SetParent(transform);
             planeBehindPosition = planeBehind.transform.position + Vector3.back * zPlaneScale;
+            // Debug.Log($"175 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
+            // currentPlane.GetComponent<PlaneController>().planeOrderNumber = lastGeneratedBlockNumber++;
         }
-       
+
         planeNumber = Random.Range(minPlaneNumber, maxPlaneNumber); //Create plane number for path
-     
+
         firstPlaneOnForwardIsCreated = true;
         movingPlaneFrequency = firstMovingPlaneFrequency;
 
@@ -190,7 +215,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         // Exit on Android Back button
-        #if UNITY_ANDROID && EASY_MOBILE
+#if UNITY_ANDROID && EASY_MOBILE
         if (Input.GetKeyUp(KeyCode.Escape))
         {   
 
@@ -215,9 +240,9 @@ public class GameManager : MonoBehaviour
                 };
             }     
         }
-        #endif
+#endif
 
-        if (playerController.isRunning && !gameOver) //Not game over
+        if ((playerController.isRunning && !gameOver) || playerController.isRespawnGoing) //Not game over
         {
             // TODO срабатывается при просто нажатии на мышку
             // if (Input.GetMouseButtonDown(0))
@@ -316,8 +341,9 @@ public class GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        EventManager.OnLevelFinished.RemoveListener(GameOver);
+        EventManager.OnLevelFinished.RemoveListener(LevelPassed);
         EventManager.BlockStopClick.RemoveListener(BlockStopped);
+        EventManager.OnBlackPanelMissClick.RemoveListener(SkipRespawning);
     }
 
     public void StartGame()
@@ -326,10 +352,32 @@ public class GameManager : MonoBehaviour
         GameState = GameState.Playing;
     }
 
+    public void ContinueGame()
+    {
+        gameOver = false;
+        GameState = GameState.Playing;
+    }
+
+    public void PreGameOver()
+    {
+        gameOver = true;
+        GameState = GameState.PreGameOver;
+    }
+
     public void GameOver()
     {
         gameOver = true;
         GameState = GameState.GameOver;
+
+        SoundManager.Instance.StopMusic();
+    }
+
+    private void LevelPassed()
+    {
+        gameOver = true;
+        GameState = GameState.LevelPassed;
+
+        confettiParticle.Play();
 
         SoundManager.Instance.StopMusic();
     }
@@ -369,7 +417,9 @@ public class GameManager : MonoBehaviour
                         //Create the first plane of this path//Create position
                         planePosition = (currentPlane.transform.position + fixPosition) + forwardDirection * xPlaneScale;
                         currentPlane = (GameObject)Instantiate(normalPlane, planePosition, Quaternion.Euler(0, 0, 0));//Create the first plane of this path
-
+                        Debug.Log($"385 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
+                        currentPlane.GetComponent<PlaneController>().planeOrderNumber = lastGeneratedBlockNumber++;
+                        //currentPlane.GetComponent<BoxCollider>().isTrigger = true;
 
                         CreateGold(currentPlane, goldFrequency);
 
@@ -384,6 +434,9 @@ public class GameManager : MonoBehaviour
                         {
                             currentPlane = (GameObject)Instantiate(lastForwardPlane, planePosition, Quaternion.Euler(0, 0, 0));
                             currentPlane.GetComponent<PlaneController>().isTheLastPlane = true;
+                            Debug.Log($"402 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
+                            currentPlane.GetComponent<PlaneController>().planeOrderNumber = lastGeneratedBlockNumber++;
+                            //currentPlane.GetComponent<BoxCollider>().isTrigger = true;
 
                             currentPlane.transform.SetParent(transform);
                             ResetCountAndPlaneNumber();//Reset count , create new plane number for next path
@@ -412,6 +465,9 @@ public class GameManager : MonoBehaviour
                         //Create the first plane of this path
                         planePosition = (currentPlane.transform.position + fixPosition) + leftDirection * xPlaneScale;
                         currentPlane = (GameObject)Instantiate(normalPlane, planePosition, Quaternion.Euler(0, 90, 0)); //Create the first plane of this path
+                        Debug.Log($"433 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
+                        currentPlane.GetComponent<PlaneController>().planeOrderNumber = lastGeneratedBlockNumber++;
+                        //currentPlane.GetComponent<BoxCollider>().isTrigger = true;
 
                         CreateGold(currentPlane, goldFrequency);
 
@@ -426,6 +482,9 @@ public class GameManager : MonoBehaviour
                         {
                             currentPlane = (GameObject)Instantiate(lastLeftPlane, planePosition, Quaternion.Euler(0, 90, 0)); //Create plane 
                             currentPlane.GetComponent<PlaneController>().isTheLastPlane = true;
+                            Debug.Log($"450 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
+                            currentPlane.GetComponent<PlaneController>().planeOrderNumber = lastGeneratedBlockNumber++;
+                            //currentPlane.GetComponent<BoxCollider>().isTrigger = true;
 
                             CreateGold(currentPlane, goldFrequency);
 
@@ -439,6 +498,8 @@ public class GameManager : MonoBehaviour
                         }
                     }
                 }
+
+                currentPlane.GetComponent<PlaneController>().progressNumber = ++currentProgressNumber;
             }
             yield return null;
         }
@@ -457,6 +518,9 @@ public class GameManager : MonoBehaviour
 
     void GeneratePlane(bool isForwardSide)
     {
+        //planeNumX++;
+        //Debug.Log($"Plane X # {planeNumX}");
+
         float movingPlaneProbability = Random.Range(0f, 1f);
         if (movingPlaneProbability <= movingPlaneFrequency && countPlane != 0 && countPlane % 2 == 0 && 
             ((movingPlaneNumberInLevel != -1 && countMovingPlane < movingPlaneNumberInLevel) || movingPlaneNumberInLevel == -1)) //Create moving plane
@@ -525,7 +589,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        else if (movingPlaneNumberInLevel != -1 && countMovingPlane >= movingPlaneNumberInLevel)
+        else if (movingPlaneNumberInLevel != -1 && countMovingPlane >= movingPlaneNumberInLevel) // create finish plane
         {
             var planeQuaternion = isForwardSide ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, -90, 0);
 
@@ -533,7 +597,7 @@ public class GameManager : MonoBehaviour
             planePosition = currentPlane.transform.position + forwardDirection * zPlaneScale;
 
             currentPlane.GetComponent<PlaneController>().isGameFinishBlock = true;
-            currentPlane.GetComponent<BoxCollider>().isTrigger = true;
+            // currentPlane.GetComponent<BoxCollider>().isTrigger = true;
             movingPlanesLimitReached = true;
         }
         else //Create normal plane
@@ -550,6 +614,9 @@ public class GameManager : MonoBehaviour
             }
 
             currentPlane.transform.SetParent(transform);
+            Debug.Log($"577 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
+            currentPlane.GetComponent<PlaneController>().planeOrderNumber = lastGeneratedBlockNumber++;
+            //currentPlane.GetComponent<BoxCollider>().isTrigger = true;
             CreateGold(currentPlane, goldFrequency);
         }
     }
@@ -803,6 +870,15 @@ public class GameManager : MonoBehaviour
 
             default:
                 return Color.white;
+        }
+    }
+
+    private void SkipRespawning()
+    {
+        if (GameState == GameState.PreGameOver)
+        {
+            uIManager.HideRespawnUI();
+            GameOver();
         }
     }
 }
