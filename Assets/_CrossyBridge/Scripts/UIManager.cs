@@ -28,7 +28,7 @@ public class UIManager : MonoBehaviour
     public Text score;
     public Text bestScore;
     public Text gold;
-    public Text title;
+    //public Text title;
     public GameObject tapToStart;
     public GameObject characterSelectBtn;
     public GameObject menuButtons;
@@ -146,7 +146,7 @@ public class UIManager : MonoBehaviour
 
         blackPanel.SetActive(false);
         header.SetActive(false);
-        title.gameObject.SetActive(false);
+        //title.gameObject.SetActive(false);
         score.gameObject.SetActive(false);
         tapToStart.SetActive(false);
         characterSelectBtn.SetActive(false);
@@ -190,7 +190,7 @@ public class UIManager : MonoBehaviour
     public void ShowGameUI()
     {
         header.SetActive(true);
-        title.gameObject.SetActive(false);
+        //title.gameObject.SetActive(false);
         score.gameObject.SetActive(true);
         tapToStart.SetActive(false);
         characterSelectBtn.SetActive(false);
@@ -256,7 +256,7 @@ public class UIManager : MonoBehaviour
     {
         blackPanel.SetActive(true);
         header.SetActive(true);
-        title.gameObject.SetActive(false);
+        //title.gameObject.SetActive(false);
         score.gameObject.SetActive(false);
         levelCompleted.SetActive(true);
         tapToStart.SetActive(false);

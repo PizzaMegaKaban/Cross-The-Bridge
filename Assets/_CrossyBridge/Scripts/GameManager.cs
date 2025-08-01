@@ -637,30 +637,170 @@ public class GameManager : MonoBehaviour
     {
         switch (number)
         {
+            //orange state
             case 0:
-                return Color.red;
+                ColorUtility.TryParseHtmlString("#FFA300", out Color orange2Color);
+                return orange2Color;
             case 1:
-                return Color.green;
+                ColorUtility.TryParseHtmlString("#FFB600", out Color orange3Color);
+                return orange3Color;
+                        
+            //yellow state
             case 2:
-                return Color.blue;
+                ColorUtility.TryParseHtmlString("#FFCF00", out Color yellow2Color);
+                return yellow2Color;
             case 3:
-                ColorUtility.TryParseHtmlString("#FFA500", out Color orangeColor);
-                return orangeColor;
+                ColorUtility.TryParseHtmlString("#FFDD00", out Color yellow3Color);
+                return yellow3Color;
             case 4:
-                ColorUtility.TryParseHtmlString("#800080", out Color purpleColor);
-                return purpleColor;
+                ColorUtility.TryParseHtmlString("#FFE800", out Color yellow4Color);
+                return yellow4Color;
             case 5:
-                return Color.yellow;
+                ColorUtility.TryParseHtmlString("#FFEF00", out Color yellow5Color);
+                return yellow5Color;
             case 6:
-                return Color.cyan;
+                ColorUtility.TryParseHtmlString("#FFF900", out Color yellow6Color);
+                return yellow6Color;
             case 7:
-                return Color.magenta;
+                ColorUtility.TryParseHtmlString("#FFFF00", out Color yellow7Color);
+                return yellow7Color;
             case 8:
-                ColorUtility.TryParseHtmlString("#008080", out Color tealColor);
-                return tealColor;
+                ColorUtility.TryParseHtmlString("#F2FF00", out Color yellow8Color);
+                return yellow8Color;
+            
+            //green state
             case 9:
-                ColorUtility.TryParseHtmlString("#000080", out Color navyColor);
-                return navyColor;
+                ColorUtility.TryParseHtmlString("#E1FF00", out Color green1Color);
+                return green1Color;
+            case 10:
+                ColorUtility.TryParseHtmlString("#C8FF00", out Color green2Color);
+                return green2Color;
+            case 11:
+                ColorUtility.TryParseHtmlString("#B3FF00", out Color green3Color);
+                return green3Color;
+            case 12:
+                ColorUtility.TryParseHtmlString("#9BFF00", out Color green4Color);
+                return green4Color;
+            case 13:
+                ColorUtility.TryParseHtmlString("#81FF00", out Color green5Color);
+                return green5Color;
+            case 14:
+                ColorUtility.TryParseHtmlString("#65FF00", out Color green6Color);
+                return green6Color;
+            case 15:
+                ColorUtility.TryParseHtmlString("#36FF00", out Color green9Color);
+                return green9Color;
+            case 16:
+                ColorUtility.TryParseHtmlString("#09FF00", out Color green11Color);
+                return green11Color;
+            case 17:
+                ColorUtility.TryParseHtmlString("#00FF53", out Color green14Color);
+                return green14Color;
+
+            //blue state
+            case 18:
+                ColorUtility.TryParseHtmlString("#00FF86", out Color blue1Color);
+                return blue1Color;
+            case 19:
+                ColorUtility.TryParseHtmlString("#00FFAA", out Color blue2Color);
+                return blue2Color;
+            case 20:
+                ColorUtility.TryParseHtmlString("#00FFC4", out Color blue3Color);
+                return blue3Color;
+            case 21:
+                ColorUtility.TryParseHtmlString("#00FFD7", out Color blue4Color);
+                return blue4Color;
+            case 22:
+                ColorUtility.TryParseHtmlString("#00FFF3", out Color blue5Color);
+                return blue5Color;
+            case 23:
+                ColorUtility.TryParseHtmlString("#00F5FF", out Color blue6Color);
+                return blue6Color;
+            case 24:
+                ColorUtility.TryParseHtmlString("#00E6FF", out Color blue7Color);
+                return blue7Color;
+            case 25:
+                ColorUtility.TryParseHtmlString("#00DAFF", out Color blue8Color);
+                return blue8Color;
+            case 26:
+                ColorUtility.TryParseHtmlString("#00CAFF", out Color blue9Color);
+                return blue9Color;
+            case 27:
+                ColorUtility.TryParseHtmlString("#00B3FF", out Color blue10Color);
+                return blue10Color;
+            case 28:
+                ColorUtility.TryParseHtmlString("#009BFF", out Color blue11Color);
+                return blue11Color;
+            case 29:
+                ColorUtility.TryParseHtmlString("#008DFF", out Color blue12Color);
+                return blue12Color;
+            case 30:
+                ColorUtility.TryParseHtmlString("#0078FF", out Color blue13Color);
+                return blue13Color;
+            case 31:
+                ColorUtility.TryParseHtmlString("#0067FF", out Color blue14Color);
+                return blue14Color;
+            case 32:
+                ColorUtility.TryParseHtmlString("#004CFF", out Color blue15Color);
+                return blue15Color;
+            case 33:
+                ColorUtility.TryParseHtmlString("#003FFF", out Color blue16Color);
+                return blue16Color;
+            case 34:
+                ColorUtility.TryParseHtmlString("#0028FF", out Color blue17Color);
+                return blue17Color;
+            case 35:
+                ColorUtility.TryParseHtmlString("#0013FF", out Color blue18Color);
+                return blue18Color;
+            case 36:
+                ColorUtility.TryParseHtmlString("#2700FF", out Color blue19Color);
+                return blue19Color;
+            
+            //purple state
+            case 37:
+                ColorUtility.TryParseHtmlString("#3D00FF", out Color purple1Color);
+                return purple1Color;
+            case 38:
+                ColorUtility.TryParseHtmlString("#5200FF", out Color purple2Color);
+                return purple2Color;
+            case 39:
+                ColorUtility.TryParseHtmlString("#6C00FF", out Color purple3Color);
+                return purple3Color;
+            case 40:
+                ColorUtility.TryParseHtmlString("#8400FF", out Color purple4Color);
+                return purple4Color;
+            case 41:
+                ColorUtility.TryParseHtmlString("#A200FF", out Color purple5Color);
+                return purple5Color;
+            
+            //pink state
+            case 42:
+                ColorUtility.TryParseHtmlString("#B700FF", out Color pink1Color);
+                return pink1Color;
+            case 43:
+                ColorUtility.TryParseHtmlString("#D100FF", out Color pink2Color);
+                return pink2Color;
+            case 44:
+                ColorUtility.TryParseHtmlString("#ED00FF", out Color pink3Color);
+                return pink3Color;
+            case 45:
+                ColorUtility.TryParseHtmlString("#FF00FA", out Color pink4Color);
+                return pink4Color;
+            case 46:
+                ColorUtility.TryParseHtmlString("#FF00C4", out Color pink5Color);
+                return pink5Color;
+
+            //red state
+            case 47:
+                ColorUtility.TryParseHtmlString("#FF008F", out Color red1Color);
+                return red1Color;
+            case 48:
+                ColorUtility.TryParseHtmlString("#FF008F", out Color red2Color);
+                return red2Color;
+            case 49:
+                ColorUtility.TryParseHtmlString("#FF0017", out Color red3Color);
+                return red3Color;
+
             default:
                 return Color.white;
         }
