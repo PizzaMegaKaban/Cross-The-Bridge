@@ -11,4 +11,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CharacterSelection.unity
     guid: 7d7963a841c9c42978dac5049f7064a2
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 86096c5659ce81e408749af5f3528d1b,
+      type: 2}
+    com.unity.localization.settings: {fileID: 11400000, guid: cc94adcf4edbcdb4ba79e355c3ce956b,
+      type: 2}
