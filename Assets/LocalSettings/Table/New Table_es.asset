@@ -106,6 +106,10 @@ MonoBehaviour:
     m_Localized: +ANUNCIO ELIMINADO
     m_Metadata:
       m_Items: []
+  - m_Id: 28258838090051584
+    m_Localized: JUEGO TERMINADO
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

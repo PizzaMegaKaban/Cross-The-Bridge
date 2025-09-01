@@ -106,6 +106,10 @@ MonoBehaviour:
     m_Localized: +REKLAM KALDIRILDI
     m_Metadata:
       m_Items: []
+  - m_Id: 28258838090051584
+    m_Localized: "OYUN B\u0130TT\u0130"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

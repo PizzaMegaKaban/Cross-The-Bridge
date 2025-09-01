@@ -34,6 +34,7 @@ public class UIManager : MonoBehaviour
     public GameObject menuButtons;
     public Text dailyRewardBtnText;
     public GameObject levelCompleted;
+    public GameObject gameOver;
     public GameObject dailyRewardBtn;
     public GameObject rewardUI;
     public GameObject soundOffBtn;
@@ -158,7 +159,6 @@ public class UIManager : MonoBehaviour
 
         blackPanel.SetActive(false);
         header.SetActive(false);
-        //title.gameObject.SetActive(false);
         score.gameObject.SetActive(false);
         tapToStart.SetActive(false);
         characterSelectBtn.SetActive(false);
@@ -169,6 +169,8 @@ public class UIManager : MonoBehaviour
         gameplayManagementCanvas.SetActive(false);
         timerSlider.SetActive(false);
         levelTimer.SetActive(false);
+        gameOver.SetActive(false);
+        levelCompleted.SetActive(false);
 
         // Enable or disable premium stuff
         //bool enablePremium = PremiumFeaturesManager.Instance.enablePremiumFeatures;
@@ -192,10 +194,10 @@ public class UIManager : MonoBehaviour
         settingsCanvas.SetActive(false);
 
         header.SetActive(true);
-        // title.gameObject.SetActive(true);
         tapToStart.SetActive(true);
         characterSelectBtn.SetActive(true);
         pauseButton.SetActive(false);
+        gameOver.SetActive(false);
         levelCompleted.SetActive(false);
         gameplayManagementCanvas.SetActive(false);
         timerSlider.SetActive(false);
@@ -205,14 +207,17 @@ public class UIManager : MonoBehaviour
     public void ShowGameUI()
     {
         header.SetActive(true);
-        //title.gameObject.SetActive(false);
         score.gameObject.SetActive(true);
         tapToStart.SetActive(false);
         characterSelectBtn.SetActive(false);
         pauseButton.SetActive(true);
+        gameOver.SetActive(false);
         levelCompleted.SetActive(false);
         gameplayManagementCanvas.SetActive(true);
-        timerSlider.SetActive(true);
+        if (PlayerPrefs.GetInt("MovingPlanesInLevel", -1) == -1)
+            timerSlider.SetActive(false);
+        else
+            timerSlider.SetActive(true);
         levelTimer.SetActive(true);
     }
 
@@ -273,9 +278,9 @@ public class UIManager : MonoBehaviour
     {
         blackPanel.SetActive(true);
         header.SetActive(true);
-        //title.gameObject.SetActive(false);
-        //title.gameObject.SetActive(false);
         score.gameObject.SetActive(true);
+        gameOver.SetActive(true);
+        levelCompleted.SetActive(false);
         tapToStart.SetActive(false);
         menuButtons.SetActive(true);
         pauseButton.SetActive(false);
@@ -321,9 +326,9 @@ public class UIManager : MonoBehaviour
     {
         blackPanel.SetActive(true);
         header.SetActive(true);
-        //title.gameObject.SetActive(false);
         score.gameObject.SetActive(false);
         levelCompleted.SetActive(true);
+        gameOver.SetActive(false);
         tapToStart.SetActive(false);
         menuButtons.SetActive(true);
         pauseButton.SetActive(false);

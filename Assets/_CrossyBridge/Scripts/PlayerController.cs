@@ -57,11 +57,18 @@ public class PlayerController : MonoBehaviour
         }
 
         var currentCharacterColoring = currentCharacter.GetComponentInChildren<Coloring>().gameObject;
+
+        // окраска автомобиля
+        string htmlCarColor = PlayerPrefs.GetString("CarColor" + CharacterManager.Instance.CurrentCharacterIndex.ToString(), "#EEEEEE");
+        Color carColor;
+        if (!ColorUtility.TryParseHtmlString(htmlCarColor, out carColor))
+            carColor = Color.gray;
+        currentCharacterColoring.GetComponent<Renderer>().sharedMaterial.SetColor("_Color", carColor);
+
         Mesh charMesh = currentCharacterColoring.GetComponent<MeshFilter>().sharedMesh;
         Material charMaterial = currentCharacterColoring.GetComponent<Renderer>().sharedMaterial;
         playerChild.GetComponent<MeshFilter>().mesh = charMesh;
         playerChild.GetComponent<MeshRenderer>().material = charMaterial;
-
 
         dir = Vector3.forward; //first moving direction
         zPlaneScale = gameManager.normalSummerPlanePrefab.GetComponent<Renderer>().bounds.size.z;

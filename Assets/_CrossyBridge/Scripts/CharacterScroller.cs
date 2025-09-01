@@ -326,6 +326,17 @@ public class CharacterScroller : MonoBehaviour
         }
     }
 
+    public void SetColorForCar(string colorString)
+    {
+        Color selectedColor;
+        if (!ColorUtility.TryParseHtmlString(colorString, out selectedColor))
+            selectedColor = Color.gray;
+        GameObject coloringComponent = currentCharacter.GetComponentInChildren<Coloring>().gameObject;
+        coloringComponent.GetComponent<Renderer>().material.SetColor("_Color", selectedColor);
+        PlayerPrefs.SetString("CarColor" + currentCharacter.GetComponent<Character>().characterSequenceNumber.ToString(),
+            "#" + ColorUtility.ToHtmlStringRGB(selectedColor));
+    }
+
     public void SelectButton()
     {
         CharacterManager.Instance.CurrentCharacterIndex = currentCharacter.GetComponent<Character>().characterSequenceNumber;

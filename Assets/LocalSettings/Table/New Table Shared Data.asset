@@ -103,6 +103,10 @@ MonoBehaviour:
     m_Key: +ad remove
     m_Metadata:
       m_Items: []
+  - m_Id: 28258838090051584
+    m_Key: GAME OVER
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
