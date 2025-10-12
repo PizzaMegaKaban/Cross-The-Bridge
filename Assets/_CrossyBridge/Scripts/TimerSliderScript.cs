@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class TimerSliderScript : MonoBehaviour
 {
     public Slider timerSlider;
+    public GameManager gameManager;
     public float timeDuration = 5f;
     private float timeRemaining;
     private bool timerRunning = false;
@@ -31,8 +32,8 @@ public class TimerSliderScript : MonoBehaviour
             {
                 timerRunning = false;
                 timerSlider.value = 0f;
-                Debug.Log("Timer ended!");
                 // You can add any callback here
+                gameManager.GameOver();
                 Destroy(gameObject);
             }
         }

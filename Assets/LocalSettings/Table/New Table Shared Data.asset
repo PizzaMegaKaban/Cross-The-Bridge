@@ -103,6 +103,18 @@ MonoBehaviour:
     m_Key: +ad remove
     m_Metadata:
       m_Items: []
+  - m_Id: 28258838090051584
+    m_Key: GAME OVER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32848058445914112
+    m_Key: COINS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33023030200033280
+    m_Key: CLOSE
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

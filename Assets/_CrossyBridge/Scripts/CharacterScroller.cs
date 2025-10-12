@@ -30,7 +30,8 @@ public class CharacterScroller : MonoBehaviour
     public Button selectButon;
     public Button unlockButton;
     public Button lockButton;
-    public Color lockColor = Color.black;
+    public GameObject colorSelectionButtons;
+    public Color defaultColor = Color.white;
 
     List<GameObject> listCharacter = new List<GameObject>();
     GameObject currentCharacter;
@@ -47,7 +48,7 @@ public class CharacterScroller : MonoBehaviour
     void Start()
     {
         //PlayerPrefs.DeleteAll();
-        lockColor.a = 0;    // need this for later setting material colors to work
+        // lockColor.a = 0;    // need this for later setting material colors to work
 
         int currentCharacterIndex = CharacterManager.Instance.CurrentCharacterIndex;
         currentCharacterIndex = Mathf.Clamp(currentCharacterIndex, 0, CharacterManager.Instance.characters.Length - 1);
@@ -68,10 +69,8 @@ public class CharacterScroller : MonoBehaviour
             Coloring charColoringRdr = character.GetComponentInChildren<Coloring>();
             Renderer charRdr = charColoringRdr.GetComponent<Renderer>();
 
-            if (charData.IsUnlocked)
-                charRdr.material.SetColor("_Color", Color.white);
-            else
-                charRdr.material.SetColor("_Color", lockColor);
+            if (!charData.IsUnlocked)
+                charRdr.material.SetColor("_Color", defaultColor);
 
             // set as child of this object
             character.transform.parent = transform;
@@ -169,9 +168,11 @@ public class CharacterScroller : MonoBehaviour
                 unlockButton.gameObject.SetActive(false);
                 lockButton.gameObject.SetActive(false);
                 selectButon.gameObject.SetActive(true);
+                colorSelectionButtons.SetActive(true);
             }
             else
-            {   
+            {
+                colorSelectionButtons.SetActive(false);
                 selectButon.gameObject.SetActive(false);
                 if (CoinManager.Instance.Coins >= charData.price)
                 {
@@ -324,6 +325,17 @@ public class CharacterScroller : MonoBehaviour
             unlockButton.gameObject.SetActive(false);
             selectButon.gameObject.SetActive(true);
         }
+    }
+
+    public void SetColorForCar(string colorString)
+    {
+        Color selectedColor;
+        if (!ColorUtility.TryParseHtmlString(colorString, out selectedColor))
+            selectedColor = Color.gray;
+        GameObject coloringComponent = currentCharacter.GetComponentInChildren<Coloring>().gameObject;
+        coloringComponent.GetComponent<Renderer>().material.SetColor("_Color", selectedColor);
+        PlayerPrefs.SetString("CarColor" + currentCharacter.GetComponent<Character>().characterSequenceNumber.ToString(),
+            "#" + ColorUtility.ToHtmlStringRGB(selectedColor));
     }
 
     public void SelectButton()

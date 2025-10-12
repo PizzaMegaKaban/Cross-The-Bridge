@@ -58,14 +58,24 @@ namespace SgLib
             }
         }
 
+        public static void OpenTelegramPage()
+        {
+            Application.OpenURL(AppInfo.Instance.TELEGRAM_LINK);
+        }
+
         public static void OpenFacebookPage()
         {
             Application.OpenURL(AppInfo.Instance.FACEBOOK_LINK);
         }
 
-        public static void OpenTwitterPage()
+        public static void OpenXPage()
         {
-            Application.OpenURL(AppInfo.Instance.TWITTER_LINK);
+            Application.OpenURL(AppInfo.Instance.X_LINK);
+        }
+
+        public static void OpenGmailPage()
+        {
+            Application.OpenURL(AppInfo.Instance.GMAIL_LINK);
         }
 
         public static void ContactUs()

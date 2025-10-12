@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 27455885312
-    m_Localized: "\xBFCONTINUAR?"
+    m_Localized: CONTINUAR
     m_Metadata:
       m_Items: []
   - m_Id: 122582700032
@@ -104,6 +104,18 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 658433845194752
     m_Localized: +ANUNCIO ELIMINADO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28258838090051584
+    m_Localized: JUEGO TERMINADO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32848058445914112
+    m_Localized: MONEDAS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33023030200033280
+    m_Localized: CERCA
     m_Metadata:
       m_Items: []
   references:

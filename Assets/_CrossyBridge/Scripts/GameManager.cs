@@ -3,6 +3,10 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 using SgLib;
+using UnityEngine.Localization.Settings;
+using UnityEngine.Localization.SmartFormat.Extensions;
+using UnityEngine.Localization.SmartFormat.PersistentVariables;
+using UnityEngine.Localization.SmartFormat.GlobalVariables;
 
 #if EASY_MOBILE
 //using EasyMobile;
@@ -146,6 +150,7 @@ public class GameManager : MonoBehaviour
         EventManager.OnLevelFinished.AddListener(LevelPassed);
         EventManager.BlockStopClick.AddListener(BlockStopped);
         EventManager.OnBlackPanelMissClick.AddListener(SkipRespawning);
+        EventManager.OnCoinAdding.AddListener(AddCoinsForCurrentGame);
 
         PlayerPrefs.SetInt("DeltaPlatesForLevel", deltaPlatesForLevel);
         movingPlaneNumberInLevel = PlayerPrefs.GetInt("MovingPlanesInLevel", -1);
@@ -178,7 +183,7 @@ public class GameManager : MonoBehaviour
             currentPlane = (GameObject)Instantiate(normalPlane, planePosition, Quaternion.Euler(0, 0, 0));
             planePosition = currentPlane.transform.position + forwardDirection * zPlaneScale;
             currentPlane.transform.SetParent(transform);
-            Debug.Log($"165 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
+            // Debug.Log($"165 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
             currentPlane.GetComponent<PlaneController>().planeOrderNumber = lastGeneratedBlockNumber++;
             currentPlane.GetComponent<PlaneController>().progressNumber = ++currentProgressNumber;
 
@@ -208,7 +213,7 @@ public class GameManager : MonoBehaviour
     private void BlockStopped()
     {
         stopBlock = true;
-        Debug.Log("GameManager - Canvas was clicked!");
+        // Debug.Log("GameManager - Canvas was clicked!");
     }
 
     // Update is called once per frame
@@ -256,6 +261,7 @@ public class GameManager : MonoBehaviour
                         listMovingPlane[listIndex].GetComponent<PlaneController>().stopMoving = true; //Stop moving plane
 
                         GameObject currentPlane = listMovingPlane[listIndex];
+                        Debug.Log("Block stopping", currentPlane);
 
                         Vector3 point = new Vector3(0, yPlaneScale / 2, 0); //Draw raycast from this point
 
@@ -344,11 +350,14 @@ public class GameManager : MonoBehaviour
         EventManager.OnLevelFinished.RemoveListener(LevelPassed);
         EventManager.BlockStopClick.RemoveListener(BlockStopped);
         EventManager.OnBlackPanelMissClick.RemoveListener(SkipRespawning);
+        EventManager.OnCoinAdding.RemoveListener(AddCoinsForCurrentGame);
     }
 
     public void StartGame()
     {
         SelectLevel(PlayerPrefs.GetInt("MovingPlanesInLevel", -1));
+        PlayerPrefs.SetInt("CurrentGameCoins", 0);
+        PlayerPrefs.SetInt("CurrentGameScore", 0);
         GameState = GameState.Playing;
     }
 
@@ -356,12 +365,16 @@ public class GameManager : MonoBehaviour
     {
         gameOver = false;
         GameState = GameState.Playing;
+
+        SoundManager.Instance.PlayMusic(SoundManager.Instance.background);
     }
 
     public void PreGameOver()
     {
         gameOver = true;
         GameState = GameState.PreGameOver;
+
+        SoundManager.Instance.StopMusic();
     }
 
     public void GameOver()
@@ -417,7 +430,7 @@ public class GameManager : MonoBehaviour
                         //Create the first plane of this path//Create position
                         planePosition = (currentPlane.transform.position + fixPosition) + forwardDirection * xPlaneScale;
                         currentPlane = (GameObject)Instantiate(normalPlane, planePosition, Quaternion.Euler(0, 0, 0));//Create the first plane of this path
-                        Debug.Log($"385 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
+                        // Debug.Log($"385 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
                         currentPlane.GetComponent<PlaneController>().planeOrderNumber = lastGeneratedBlockNumber++;
                         //currentPlane.GetComponent<BoxCollider>().isTrigger = true;
 
@@ -426,7 +439,7 @@ public class GameManager : MonoBehaviour
                         //Create position for next plane
                         planePosition = currentPlane.transform.position + forwardDirection * zPlaneScale;
 
-                        currentPlane.transform.SetParent(transform);  
+                        currentPlane.transform.SetParent(transform);
                     }
                     else //First plane is created
                     {
@@ -434,7 +447,7 @@ public class GameManager : MonoBehaviour
                         {
                             currentPlane = (GameObject)Instantiate(lastForwardPlane, planePosition, Quaternion.Euler(0, 0, 0));
                             currentPlane.GetComponent<PlaneController>().isTheLastPlane = true;
-                            Debug.Log($"402 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
+                            // Debug.Log($"402 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
                             currentPlane.GetComponent<PlaneController>().planeOrderNumber = lastGeneratedBlockNumber++;
                             //currentPlane.GetComponent<BoxCollider>().isTrigger = true;
 
@@ -465,7 +478,7 @@ public class GameManager : MonoBehaviour
                         //Create the first plane of this path
                         planePosition = (currentPlane.transform.position + fixPosition) + leftDirection * xPlaneScale;
                         currentPlane = (GameObject)Instantiate(normalPlane, planePosition, Quaternion.Euler(0, 90, 0)); //Create the first plane of this path
-                        Debug.Log($"433 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
+                        // Debug.Log($"433 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
                         currentPlane.GetComponent<PlaneController>().planeOrderNumber = lastGeneratedBlockNumber++;
                         //currentPlane.GetComponent<BoxCollider>().isTrigger = true;
 
@@ -482,7 +495,7 @@ public class GameManager : MonoBehaviour
                         {
                             currentPlane = (GameObject)Instantiate(lastLeftPlane, planePosition, Quaternion.Euler(0, 90, 0)); //Create plane 
                             currentPlane.GetComponent<PlaneController>().isTheLastPlane = true;
-                            Debug.Log($"450 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
+                            // Debug.Log($"450 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
                             currentPlane.GetComponent<PlaneController>().planeOrderNumber = lastGeneratedBlockNumber++;
                             //currentPlane.GetComponent<BoxCollider>().isTrigger = true;
 
@@ -494,7 +507,7 @@ public class GameManager : MonoBehaviour
                         }
                         else //This is not last plane of this path,caculate and generate normal plane or moving plane 
                         {
-                            GeneratePlane(false);                           
+                            GeneratePlane(false);
                         }
                     }
                 }
@@ -522,7 +535,7 @@ public class GameManager : MonoBehaviour
         //Debug.Log($"Plane X # {planeNumX}");
 
         float movingPlaneProbability = Random.Range(0f, 1f);
-        if (movingPlaneProbability <= movingPlaneFrequency && countPlane != 0 && countPlane % 2 == 0 && 
+        if (movingPlaneProbability <= movingPlaneFrequency && countPlane != 0 && countPlane % 2 == 0 &&
             ((movingPlaneNumberInLevel != -1 && countMovingPlane < movingPlaneNumberInLevel) || movingPlaneNumberInLevel == -1)) //Create moving plane
         {
             //How many moving plane is created
@@ -614,7 +627,7 @@ public class GameManager : MonoBehaviour
             }
 
             currentPlane.transform.SetParent(transform);
-            Debug.Log($"577 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
+            // Debug.Log($"577 lastGeneratedBlockNumber = {lastGeneratedBlockNumber}");
             currentPlane.GetComponent<PlaneController>().planeOrderNumber = lastGeneratedBlockNumber++;
             //currentPlane.GetComponent<BoxCollider>().isTrigger = true;
             CreateGold(currentPlane, goldFrequency);
@@ -688,7 +701,8 @@ public class GameManager : MonoBehaviour
             ColorUtility.TryParseHtmlString("#009CFF", out Color topColor);
             ColorUtility.TryParseHtmlString("#39B4FF", out Color bottomColor);
             return (topColor, bottomColor);
-        } else
+        }
+        else
         {
             int firstDigit = level / 10;
             Color topColor = GetGolorByNumber(firstDigit);
@@ -711,7 +725,7 @@ public class GameManager : MonoBehaviour
             case 1:
                 ColorUtility.TryParseHtmlString("#FFB600", out Color orange3Color);
                 return orange3Color;
-                        
+
             //yellow state
             case 2:
                 ColorUtility.TryParseHtmlString("#FFCF00", out Color yellow2Color);
@@ -734,7 +748,7 @@ public class GameManager : MonoBehaviour
             case 8:
                 ColorUtility.TryParseHtmlString("#F2FF00", out Color yellow8Color);
                 return yellow8Color;
-            
+
             //green state
             case 9:
                 ColorUtility.TryParseHtmlString("#E1FF00", out Color green1Color);
@@ -822,7 +836,7 @@ public class GameManager : MonoBehaviour
             case 36:
                 ColorUtility.TryParseHtmlString("#2700FF", out Color blue19Color);
                 return blue19Color;
-            
+
             //purple state
             case 37:
                 ColorUtility.TryParseHtmlString("#3D00FF", out Color purple1Color);
@@ -839,7 +853,7 @@ public class GameManager : MonoBehaviour
             case 41:
                 ColorUtility.TryParseHtmlString("#A200FF", out Color purple5Color);
                 return purple5Color;
-            
+
             //pink state
             case 42:
                 ColorUtility.TryParseHtmlString("#B700FF", out Color pink1Color);
@@ -877,8 +891,14 @@ public class GameManager : MonoBehaviour
     {
         if (GameState == GameState.PreGameOver)
         {
-            uIManager.HideRespawnUI();
+            // uIManager.HideRespawnUI();
             GameOver();
         }
+    }
+
+    private void AddCoinsForCurrentGame(int coinsCount)
+    {
+        if (GameState == GameState.Playing)
+            PlayerPrefs.SetInt("CurrentGameCoins", PlayerPrefs.GetInt("CurrentGameCoins", 0) + coinsCount);
     }
 }

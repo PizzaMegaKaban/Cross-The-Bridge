@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterSequenceNumber: 6
-  price: 0
+  price: 900
   isFree: 0
 --- !u!1 &8030360057480437562 stripped
 GameObject:
