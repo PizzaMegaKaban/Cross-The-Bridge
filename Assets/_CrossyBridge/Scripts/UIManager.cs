@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using System.Collections;
 using System;
 using SgLib;
+using UnityEngine.Localization;
+using TMPro;
 
 #if EASY_MOBILE
 //using EasyMobile;
@@ -19,22 +21,38 @@ public class UIManager : MonoBehaviour
     public CameraController camController;
     public DailyRewardController dailyRewardController;
 
-    public GameObject mainCanvas;
+    [Header("Canvases")]
+    
+    // был mainCanvas
+    public GameObject startGameCanvas;
+    public GameObject gameplayCanvas;
+    public GameObject respawnCanvas;
+    public GameObject gameOverCanvas;
+    public GameObject levelsCanvas;
     public GameObject settingsCanvas;
     public GameObject storeCanvas;
+    public GameObject rewardCanvas;
+    public GameObject pauseCanvas;
 
+    [Header("UIElements")]
     public GameObject blackPanel;
     public GameObject header;
     public Text score;
-    public Text bestScore;
-    public Text gold;
+    public TextMeshProUGUI bestScore;
+    public TextMeshProUGUI gold;
     //public Text title;
+    public TextMeshProUGUI levelNumber;
+    public GameObject currentLevel;
     public GameObject tapToStart;
     public GameObject characterSelectBtn;
     public GameObject menuButtons;
-    public Text dailyRewardBtnText;
+    public GameObject restartGameButton;
+    public GameObject nextLevelButton;
+    public TextMeshProUGUI dailyRewardBtnText;
     public GameObject levelCompleted;
     public GameObject gameOver;
+    public GameObject gameCoins;
+    public TextMeshProUGUI gameCoinsCount;
     public GameObject dailyRewardBtn;
     public GameObject rewardUI;
     public GameObject soundOffBtn;
@@ -42,7 +60,6 @@ public class UIManager : MonoBehaviour
     public GameObject musicOnBtn;
     public GameObject musicOffBtn;
     public GameObject pauseButton;
-    public GameObject pauseMenuCanvas;
     public GameObject gameplayManagementCanvas;
     public GameObject respawnUI;
     public GameObject countdownUI;
@@ -63,9 +80,11 @@ public class UIManager : MonoBehaviour
     public GameObject shareUI;
     //public ShareUIController shareUIController;
 
-    Animator scoreAnimator;
-    Animator dailyRewardAnimator;
+    // Animator scoreAnimator;
+    // Animator dailyRewardAnimator;
     bool isWatchAdsForCoinBtnActive;
+    
+    bool _isGameOver;
 
     void OnEnable()
     {
@@ -83,38 +102,39 @@ public class UIManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        scoreAnimator = score.GetComponent<Animator>();
-        dailyRewardAnimator = dailyRewardBtn.GetComponent<Animator>();
+        // scoreAnimator = score.GetComponent<Animator>();
+        // dailyRewardAnimator = dailyRewardBtn.GetComponent<Animator>();
 
-        Reset();
+        // TODO раскомментировать для игры
+        // Reset();
         ShowStartUI();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (mainCanvas.activeSelf)
-        {
-            score.text = ScoreManager.Instance.Score.ToString();
-            bestScore.text = ScoreManager.Instance.HighScore.ToString();
-            gold.text = CoinManager.Instance.Coins.ToString();
+        //if (startGameCanvas.activeSelf)
+        //{
+        //    // score.text = ScoreManager.Instance.Score.ToString();
+        //    bestScore.text = ScoreManager.Instance.HighScore.ToString();
+        //    gold.text = CoinManager.Instance.Coins.ToString();
 
-            if (!DailyRewardController.Instance.disable && dailyRewardBtn.gameObject.activeSelf)
-            {
-                TimeSpan timeToReward = DailyRewardController.Instance.TimeUntilReward;
+        //    if (!DailyRewardController.Instance.disable && dailyRewardBtn.gameObject.activeSelf)
+        //    {
+        //        TimeSpan timeToReward = DailyRewardController.Instance.TimeUntilReward;
 
-                if (timeToReward <= TimeSpan.Zero)
-                {
-                    //dailyRewardBtnText.text = "GRAB YOUR REWARD!";
-                    dailyRewardAnimator.SetTrigger("activate");
-                }
-                else
-                {
-                    dailyRewardBtnText.text = string.Format("{0:00}:{1:00}:{2:00}", timeToReward.Hours, timeToReward.Minutes, timeToReward.Seconds);
-                    dailyRewardAnimator.SetTrigger("deactivate");
-                }
-            }
-        }
+        //        if (timeToReward <= TimeSpan.Zero)
+        //        {
+        //            dailyRewardBtnText.text = "grab your reward!";
+        //            // dailyRewardAnimator.SetTrigger("activate");
+        //        }
+        //        else
+        //        {
+        //            dailyRewardBtnText.text = string.Format("{0:00}:{1:00}:{2:00}", timeToReward.Hours, timeToReward.Minutes, timeToReward.Seconds);
+        //            // dailyRewardAnimator.SetTrigger("deactivate");
+        //        }
+        //    }
+        //}
 
         if (settingsCanvas.activeSelf)
         {
@@ -143,92 +163,99 @@ public class UIManager : MonoBehaviour
         }
         else if (newState == GameState.LevelPassed)
         {
-            Invoke("ShowLevelPassedUI", 0.5f);
+            Invoke("ShowGameOverUI", 0.5f);
         }
     }
 
     void OnScoreUpdated(int newScore)
     {
-        scoreAnimator.Play("NewScore");
+        // scoreAnimator.Play("NewScore");
+
+        PlayerPrefs.SetInt("CurrentGameScore", newScore);
     }
 
     void Reset()
     {
-        mainCanvas.SetActive(true);
-        settingsCanvas.SetActive(false);
+        EventManager.OnNewCanvasOpening.Invoke(startGameCanvas);
 
-        blackPanel.SetActive(false);
-        header.SetActive(false);
-        score.gameObject.SetActive(false);
-        tapToStart.SetActive(false);
-        characterSelectBtn.SetActive(false);
-        menuButtons.SetActive(false);
-        dailyRewardBtn.SetActive(false);
-        settingsCanvas.SetActive(false);
-        pauseButton.SetActive(false);
-        gameplayManagementCanvas.SetActive(false);
-        timerSlider.SetActive(false);
-        levelTimer.SetActive(false);
-        gameOver.SetActive(false);
-        levelCompleted.SetActive(false);
+        //startGameCanvas.SetActive(true);
+        //settingsCanvas.SetActive(false);
 
-        // Enable or disable premium stuff
-        //bool enablePremium = PremiumFeaturesManager.Instance.enablePremiumFeatures;
-        //leaderboardBtn.SetActive(enablePremium);
-        //iapPurchaseBtn.SetActive(enablePremium);
-        //removeAdsBtn.SetActive(enablePremium);
-        //restorePurchaseBtn.SetActive(enablePremium);
+        //blackPanel.SetActive(false);
+        //header.SetActive(false);
+        //score.gameObject.SetActive(false);
+        //currentLevel.SetActive(false);
+        //tapToStart.SetActive(false);
+        //characterSelectBtn.SetActive(false);
+        //menuButtons.SetActive(false);
+        //dailyRewardBtn.SetActive(false);
+        //settingsCanvas.SetActive(false);
+        //pauseButton.SetActive(false);
+        //gameplayManagementCanvas.SetActive(false);
+        //timerSlider.SetActive(false);
+        //levelTimer.SetActive(false);
+        //gameOver.SetActive(false);
+        //levelCompleted.SetActive(false);
 
-        // Hide Share screnenshot by default
-        shareUI.SetActive(false);
+        //shareUI.SetActive(false);
 
-        // These premium feature buttons are hidden by default
-        // and shown when certain criteria are met (e.g. rewarded ad is loaded)
-        // watchForCoinsBtn.gameObject.SetActive(false);
-        watchForCoinsBtn.SetActive(false);
+        //watchForCoinsBtn.SetActive(false);
     }
 
     public void ShowStartUI()
     {
-        mainCanvas.SetActive(true);
-        settingsCanvas.SetActive(false);
+        EventManager.OnNewCanvasOpening.Invoke(startGameCanvas);
 
-        header.SetActive(true);
-        tapToStart.SetActive(true);
-        characterSelectBtn.SetActive(true);
-        pauseButton.SetActive(false);
-        gameOver.SetActive(false);
-        levelCompleted.SetActive(false);
-        gameplayManagementCanvas.SetActive(false);
-        timerSlider.SetActive(false);
-        levelTimer.SetActive(false);
+        //startGameCanvas.SetActive(true);
+        //settingsCanvas.SetActive(false);
+
+        //if (PlayerPrefs.GetInt("MovingPlanesInLevel", -1) == -1)
+        //    currentLevel.SetActive(false);
+        //else
+        //{
+        //    levelNumber.text = (PlayerPrefs.GetInt("MovingPlanesInLevel", -1) - PlayerPrefs.GetInt("DeltaPlatesForLevel", 2)).ToString();
+        //    currentLevel.SetActive(true);
+        //}
+
+        //header.SetActive(true);
+        //tapToStart.SetActive(true);
+        //characterSelectBtn.SetActive(true);
+        //pauseButton.SetActive(false);
+        //gameOver.SetActive(false);
+        //levelCompleted.SetActive(false);
+        //gameplayManagementCanvas.SetActive(false);
+        //timerSlider.SetActive(false);
+        //levelTimer.SetActive(false);
     }
 
     public void ShowGameUI()
     {
-        header.SetActive(true);
-        score.gameObject.SetActive(true);
-        tapToStart.SetActive(false);
-        characterSelectBtn.SetActive(false);
-        pauseButton.SetActive(true);
-        gameOver.SetActive(false);
-        levelCompleted.SetActive(false);
-        gameplayManagementCanvas.SetActive(true);
-        if (PlayerPrefs.GetInt("MovingPlanesInLevel", -1) == -1)
-            timerSlider.SetActive(false);
-        else
-            timerSlider.SetActive(true);
-        levelTimer.SetActive(true);
+        EventManager.OnNewCanvasOpening.Invoke(gameplayCanvas);
+
+        //header.SetActive(true);
+        //score.gameObject.SetActive(true);
+        //tapToStart.SetActive(false);
+        //characterSelectBtn.SetActive(false);
+        //pauseButton.SetActive(true);
+        //gameOver.SetActive(false);
+        //levelCompleted.SetActive(false);
+        //gameplayManagementCanvas.SetActive(true);
+
+        // TODO перенести логику на канвас игры
+        //if (PlayerPrefs.GetInt("MovingPlanesInLevel", -1) == -1)
+        //    timerSlider.SetActive(false);
+        //else
+        //    timerSlider.SetActive(true);
+        //levelTimer.SetActive(true);
     }
 
     public void PauseGame()
     {
-        Debug.Log("Сработала пауза!");
         if (!isPaused)
         {
             Time.timeScale = 0f;
             isPaused = true;
-            pauseButton.SetActive(false);
+            // pauseButton.SetActive(false);
 
             // Показываем меню паузы
             ShowPauseMenu();
@@ -248,23 +275,29 @@ public class UIManager : MonoBehaviour
 
     public void OpenSettingsFromPause()
     {
-        pauseMenuCanvas.SetActive(false);
-        mainCanvas.SetActive(true); // Опционально, если нужно скрыть основной интерфейс
-        settingsCanvas.SetActive(true);
-        gameplayManagementCanvas.SetActive(false);
+        EventManager.OnNewCanvasOpening.Invoke(settingsCanvas);
+
+        //pauseMenuCanvas.SetActive(false);
+        //startGameCanvas.SetActive(true); // Опционально, если нужно скрыть основной интерфейс
+        //settingsCanvas.SetActive(true);
+        //gameplayManagementCanvas.SetActive(false);
     }
 
 
     void ShowPauseMenu()
     {
-        pauseMenuCanvas.SetActive(true);
-        gameplayManagementCanvas.SetActive(false);
+        EventManager.OnNewCanvasOpening.Invoke(pauseCanvas);
+
+        //pauseMenuCanvas.SetActive(true);
+        //gameplayManagementCanvas.SetActive(false);
     }
 
     void HidePauseMenu()
     {
-        pauseMenuCanvas.SetActive(false);
-        gameplayManagementCanvas.SetActive(true);
+        EventManager.OnNewCanvasOpening.Invoke(gameplayCanvas);
+
+        //pauseMenuCanvas.SetActive(false);
+        //gameplayManagementCanvas.SetActive(true);
     }
 
     public void ReturnToMainMenu()
@@ -276,25 +309,35 @@ public class UIManager : MonoBehaviour
 
     public void ShowGameOverUI()
     {
-        blackPanel.SetActive(true);
-        header.SetActive(true);
-        score.gameObject.SetActive(true);
-        gameOver.SetActive(true);
-        levelCompleted.SetActive(false);
-        tapToStart.SetActive(false);
-        menuButtons.SetActive(true);
-        pauseButton.SetActive(false);
-        gameplayManagementCanvas.SetActive(false);
-        timerSlider.SetActive(false);
-        levelTimer.SetActive(false);
+        _isGameOver = true;
 
-        //
-        watchForCoinsBtn.gameObject.SetActive(true);
-        //
-        settingsCanvas.SetActive(false);
+        EventManager.OnNewCanvasOpening.Invoke(gameOverCanvas);
+
+        //blackPanel.SetActive(true);
+        //header.SetActive(true);
+        //score.gameObject.SetActive(true);
+        //gameOver.SetActive(true);
+        //levelCompleted.SetActive(false);
+        //currentLevel.SetActive(false);
+        //tapToStart.SetActive(false);
+        //menuButtons.SetActive(true);
+        //restartGameButton.SetActive(true);
+        //nextLevelButton.SetActive(false);
+        //pauseButton.SetActive(false);
+        //gameplayManagementCanvas.SetActive(false);
+        //timerSlider.SetActive(false);
+        //levelTimer.SetActive(false);
+
+        //gameCoinsCount.text = PlayerPrefs.GetInt("CurrentGameCoins", 0).ToString();
+        //gameCoins.SetActive(true);
+
+        ////
+        //watchForCoinsBtn.gameObject.SetActive(true);
+        ////
+        //settingsCanvas.SetActive(false);
 
         // Only show "watch for coins button" if a rewarded ad is loaded and premium features are enabled
-        #if EASY_MOBILE
+        // #if EASY_MOBILE
         // if (gameManager.enablePremiumFeatures && AdDisplayer.Instance.CanShowRewardedAd() && AdDisplayer.Instance.watchAdToEarnCoins)
         // {
         //     watchForCoinsBtn.SetActive(true);
@@ -305,15 +348,17 @@ public class UIManager : MonoBehaviour
         //     watchForCoinsBtn.SetActive(false);
         // }
 
-        watchForCoinsBtn.SetActive(true);
-        watchForCoinsBtn.GetComponent<Animator>().SetTrigger("activate");
-        #endif
+        //watchForCoinsBtn.SetActive(true);
+        //watchForCoinsBtn.GetComponent<Animator>().SetTrigger("activate");
+        // #endif
 
         // Not showing the daily reward button if the feature is disabled
-        if (!DailyRewardController.Instance.disable)
-        {
-            dailyRewardBtn.SetActive(true);
-        }
+        // TODO использовать в Canvas Manager для UI
+        //if (!DailyRewardController.Instance.disable)
+        //{
+        //    dailyRewardBtn.SetActive(true);
+        //}
+        // TODO использовать в Canvas Manager для UI
 
         //if (IsPremiumFeaturesEnabled())
         //    ShowShareUI();
@@ -324,25 +369,33 @@ public class UIManager : MonoBehaviour
 
     public void ShowLevelPassedUI()
     {
-        blackPanel.SetActive(true);
-        header.SetActive(true);
-        score.gameObject.SetActive(false);
-        levelCompleted.SetActive(true);
-        gameOver.SetActive(false);
-        tapToStart.SetActive(false);
-        menuButtons.SetActive(true);
-        pauseButton.SetActive(false);
-        gameplayManagementCanvas.SetActive(false);
-        timerSlider.SetActive(false);
-        levelTimer.SetActive(false);
+        //_isGameOver = false;
 
-        //
-        watchForCoinsBtn.gameObject.SetActive(true);
-        //
-        settingsCanvas.SetActive(false);
+        //blackPanel.SetActive(true);
+        //header.SetActive(true);
+        //score.gameObject.SetActive(false);
+        //levelCompleted.SetActive(true);
+        //gameOver.SetActive(false);
+        //currentLevel.SetActive(false);
+        //tapToStart.SetActive(false);
+        //menuButtons.SetActive(true);
+        //restartGameButton.SetActive(false);
+        //nextLevelButton.SetActive(true);
+        //pauseButton.SetActive(false);
+        //gameplayManagementCanvas.SetActive(false);
+        //timerSlider.SetActive(false);
+        //levelTimer.SetActive(false);
+
+        //gameCoinsCount.text = PlayerPrefs.GetInt("CurrentGameCoins", 0).ToString();
+        //gameCoins.SetActive(true);
+
+        ////
+        //watchForCoinsBtn.gameObject.SetActive(true);
+        ////
+        //settingsCanvas.SetActive(false);
 
         // Only show "watch for coins button" if a rewarded ad is loaded and premium features are enabled
-#if EASY_MOBILE
+// #if EASY_MOBILE
         // if (gameManager.enablePremiumFeatures && AdDisplayer.Instance.CanShowRewardedAd() && AdDisplayer.Instance.watchAdToEarnCoins)
         // {
         //     watchForCoinsBtn.SetActive(true);
@@ -353,15 +406,15 @@ public class UIManager : MonoBehaviour
         //     watchForCoinsBtn.SetActive(false);
         // }
 
-        watchForCoinsBtn.SetActive(true);
-        watchForCoinsBtn.GetComponent<Animator>().SetTrigger("activate");
-#endif
+        //watchForCoinsBtn.SetActive(true);
+        //watchForCoinsBtn.GetComponent<Animator>().SetTrigger("activate");
+// #endif
 
         // Not showing the daily reward button if the feature is disabled
-        if (!DailyRewardController.Instance.disable)
-        {
-            dailyRewardBtn.SetActive(true);
-        }
+        //if (!DailyRewardController.Instance.disable)
+        //{
+        //    dailyRewardBtn.SetActive(true);
+        //}
 
         //if (IsPremiumFeaturesEnabled())
         //    ShowShareUI();
@@ -372,32 +425,46 @@ public class UIManager : MonoBehaviour
 
     public void ShowSettingsUI()
     {
-        mainCanvas.SetActive(false);
-        settingsCanvas.SetActive(true);
-        gameplayManagementCanvas.SetActive(false);
+        EventManager.OnNewCanvasOpening.Invoke(settingsCanvas);
+
+        //startGameCanvas.SetActive(false);
+        //settingsCanvas.SetActive(true);
+        //gameplayManagementCanvas.SetActive(false);
     }
 
     public void HideSettingsUI()
     {
-        mainCanvas.SetActive(true);
-        pauseMenuCanvas.SetActive(true);
-        settingsCanvas.SetActive(false);
-        gameplayManagementCanvas.SetActive(true);
-    }
+        if (gameManager.GameState == GameState.GameOver || gameManager.GameState == GameState.LevelPassed)
+        {
+            EventManager.OnNewCanvasOpening.Invoke(gameOverCanvas);
+        }
+        else if (gameManager.GameState == GameState.Paused)
+        {
+            EventManager.OnNewCanvasOpening.Invoke(pauseCanvas);
+        }
 
+        //startGameCanvas.SetActive(true);
+        //// pauseMenuCanvas.SetActive(true);
+        //settingsCanvas.SetActive(false);
+        //gameplayManagementCanvas.SetActive(true);
+    }
 
     public void ShowStoreUI()
     {
-        mainCanvas.SetActive(false);
-        storeCanvas.SetActive(true);
-        gameplayManagementCanvas.SetActive(false);
+        EventManager.OnNewCanvasOpening.Invoke(storeCanvas);
+
+        //startGameCanvas.SetActive(false);
+        //storeCanvas.SetActive(true);
+        //gameplayManagementCanvas.SetActive(false);
     }
 
     public void HideStoreUI()
     {
-        mainCanvas.SetActive(true);
-        storeCanvas.SetActive(false);
-        gameplayManagementCanvas.SetActive(false);
+        EventManager.OnNewCanvasOpening.Invoke(gameOverCanvas);
+
+        //startGameCanvas.SetActive(true);
+        //storeCanvas.SetActive(false);
+        //gameplayManagementCanvas.SetActive(false);
     }
 
     public void StartGame()
@@ -410,10 +477,21 @@ public class UIManager : MonoBehaviour
         gameManager.GameOver();
     }
 
-    public void RestartGame()
-    {
-        gameManager.RestartGame(0.2f);
-    }
+    //public void RestartGame()
+    //{
+    //    gameManager.RestartGame(0.2f);
+    //}
+
+    //public void PlayNextLevel()
+    //{
+    //    int movingPlanesInLevel = PlayerPrefs.GetInt("MovingPlanesInLevel", -1);
+    //    int newLevel = movingPlanesInLevel == -1 ? -1 : movingPlanesInLevel + 1 - PlayerPrefs.GetInt("DeltaPlatesForLevel", 2);
+    //    PlayerPrefs.SetInt("MovingPlanesInLevel", movingPlanesInLevel == -1 ? -1 : movingPlanesInLevel + 1);
+    //    string sceneName = "Level" + newLevel.ToString();
+    //    gameManager.SelectLevel(newLevel, true);
+    //    gameManager.RestartGame(0f);
+    //    levelSelect.SetActive(false);
+    //}
 
     public void WatchRewardedAdForCoins()
     {
@@ -441,18 +519,40 @@ public class UIManager : MonoBehaviour
 
     public void ShowRewardUI(int reward)
     {
-        rewardUI.SetActive(true);
-        rewardUI.GetComponent<RewardUIController>().Reward(reward);
+        PlayerPrefs.SetInt("Reward", reward);
+        EventManager.OnNewCanvasOpening.Invoke(rewardCanvas);
+
+        //rewardUI.SetActive(true);
+        //rewardUI.GetComponent<RewardUIController>().Reward(reward);
     }
 
     public void HideRewardUI()
     {
-        rewardUI.SetActive(false);
+        EventManager.OnNewCanvasOpening.Invoke(gameOverCanvas);
+
+        // rewardUI.SetActive(false);
     }
 
     public void ShowLevelsUI()
     {
-        levelSelect.SetActive(true);
+        EventManager.OnNewCanvasOpening.Invoke(levelsCanvas);
+
+        //levelSelect.SetActive(true);
+        //if (_isGameOver)
+        //    gameOver.SetActive(false);
+        //else
+        //    levelCompleted.SetActive(false);
+    }
+
+    public void HideLevelsUI()
+    {
+        EventManager.OnNewCanvasOpening.Invoke(gameOverCanvas);
+
+        //levelSelect.SetActive(false);
+        //if (_isGameOver)
+        //    gameOver.SetActive(true);
+        //else
+        //    levelCompleted.SetActive(true);
     }
 
     public void ShowLeaderboardUI()
@@ -515,17 +615,27 @@ public class UIManager : MonoBehaviour
 
     public void ShowRespawnUI()
     {
+        EventManager.OnNewCanvasOpening.Invoke(respawnCanvas);
+
         // gameplayManagementCanvas.SetActive(false);
-        blackPanel.SetActive(true);
-        respawnUI.SetActive(true);
+
+        //blackPanel.SetActive(true);
+        //respawnUI.SetActive(true);
     }
 
-    public void HideRespawnUI()
-    {
-        // gameplayManagementCanvas.SetActive(true);
-        blackPanel.SetActive(false);
-        respawnUI.SetActive(false);
-    }
+    //public void CallRespawn()
+    //{
+    //    EventManager.OnNewCanvasOpening.Invoke(respawnCanvas);
+    //}
+
+    //public void HideRespawnUI()
+    //{
+    //    EventManager.OnNewCanvasOpening.Invoke(gameOverCanvas);
+
+    //    // gameplayManagementCanvas.SetActive(true);
+    //    //blackPanel.SetActive(false);
+    //    //respawnUI.SetActive(false);
+    //}
 
     public void ToggleSound()
     {
@@ -547,9 +657,19 @@ public class UIManager : MonoBehaviour
         Utilities.RateApp();
     }
 
-    public void OpenTwitterPage()
+    public void OpenXPage()
     {
-        Utilities.OpenTwitterPage();
+        Utilities.OpenXPage();
+    }
+
+    public void OpenGmailPage()
+    {
+        Utilities.OpenGmailPage();
+    }
+
+    public void OpenTelegramPage()
+    {
+        Utilities.OpenTelegramPage();
     }
 
     public void OpenFacebookPage()
@@ -595,16 +715,13 @@ public class UIManager : MonoBehaviour
     //    return PremiumFeaturesManager.Instance != null && PremiumFeaturesManager.Instance.enablePremiumFeatures;
     //}
 
-    public void CallRespawn()
-    {
-        HideRespawnUI();
-        countdownUI.SetActive(true);
-        score.gameObject.SetActive(false);
-    }
+    //public void HideCountdown()
+    //{
+    //    EventManager.OnNewCanvasOpening.Invoke(gameplayCanvas);
+    //}
 
-    public void HideCountdown()
+    public void RemoveAdds()
     {
-        countdownUI.SetActive(false);
-        score.gameObject.SetActive(true);
+        EventManager.OnNewCanvasOpening.Invoke(storeCanvas);
     }
 }

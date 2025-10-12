@@ -180,8 +180,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterSequenceNumber: 0
-  price: 300
-  isFree: 0
+  price: 0
+  isFree: 1
 --- !u!1 &6289975898095406856 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -8391222552659086748, guid: ee4d3ec14618dad4b913ff572afc071d,

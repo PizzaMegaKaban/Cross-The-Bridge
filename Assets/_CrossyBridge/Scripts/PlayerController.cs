@@ -107,7 +107,7 @@ public class PlayerController : MonoBehaviour
                 {
                     if (hit.collider.TryGetComponent<PlaneController>(out PlaneController planeController) && planeController.isTheLastPlane) //This is the last plane, turn right here
                     {
-                        Debug.Log($"PlayerController {planeController}");
+                        // Debug.Log($"PlayerController {planeController}");
                         if (dir == Vector3.forward) //Player moving forward -> turn and rotate left
                         {
                             isRotateForward = false; //Reset
@@ -158,10 +158,10 @@ public class PlayerController : MonoBehaviour
 
                 if (!gameManager.gameOver)
                 {
-                    Debug.Log($"LastPassedNormalPlane = {PlayerPrefs.GetInt("LastPassedNormalPlane")}");
+                    // Debug.Log($"LastPassedNormalPlane = {PlayerPrefs.GetInt("LastPassedNormalPlane")}");
                     Rigidbody rb = playerChild.GetComponent<Rigidbody>();
-                    Debug.Log($"IsKinematic = {rb.isKinematic}");
-                    Debug.Log($"Velocity = {rb.velocity}");
+                    // Debug.Log($"IsKinematic = {rb.isKinematic}");
+                    // Debug.Log($"Velocity = {rb.velocity}");
                     if (enableRespawn)
                     {
                         PlayerPrefs.SetInt("LastCarDir", dir == Vector3.forward ? 0 : 1);
@@ -244,6 +244,7 @@ public class PlayerController : MonoBehaviour
 
     private void SetPlayerOnPlane()
     {
+        gameManager.listIndex++;
         isRespawnGoing = true;
         // получаем последний блок, на котором был пользователь
         int lastPassedNormalPlane = PlayerPrefs.GetInt("LastPassedNormalPlane", 1);
@@ -259,7 +260,7 @@ public class PlayerController : MonoBehaviour
         // присваиваем transform.position этого блока родительскому компоненту нашей машины
         Vector3 normalPlaneForSpawnPosition = normalPlaneForSpawn.transform.position;
         normalPlaneForSpawnPosition.y = -0.5f;
-        Debug.Log($"normalPlaneForSpawnPosition = {normalPlaneForSpawnPosition}");
+        // Debug.Log($"normalPlaneForSpawnPosition = {normalPlaneForSpawnPosition}");
         gameObject.transform.position = normalPlaneForSpawnPosition;
         gameObject.transform.rotation = normalPlaneForSpawn.transform.rotation;
         // изменяем rigidbody для машины
@@ -307,7 +308,7 @@ public class PlayerController : MonoBehaviour
     private void RespawnPlayer()
     {
         isRespawnGoing = false;
-        uIManager.HideCountdown();
+        // uIManager.HideCountdown();
         // переключаем GameState в Playing
         gameManager.ContinueGame();
         dir = PlayerPrefs.GetInt("LastCarDir", 0) == 0 ? Vector3.forward : Vector3.left;

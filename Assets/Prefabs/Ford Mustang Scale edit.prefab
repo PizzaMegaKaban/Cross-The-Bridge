@@ -134,7 +134,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterSequenceNumber: 3
-  price: 0
+  price: 500
   isFree: 0
 --- !u!65 &1997870358540594018
 BoxCollider:

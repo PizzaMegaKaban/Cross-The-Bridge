@@ -10,7 +10,7 @@ namespace SgLib
 
         public int Coins { get; private set; }
 
-        public static event Action<int> CoinsUpdated = delegate {};
+        // public static event Action<int> CoinsUpdated = delegate {};
 
         [SerializeField]
         int initialCoins = 0;
@@ -52,7 +52,9 @@ namespace SgLib
             PlayerPrefs.SetInt(PPK_COINS, Coins);
 
             // Fire event
-            CoinsUpdated(Coins);
+            // CoinsUpdated(Coins);
+
+            EventManager.OnCoinAdding.Invoke(amount);
         }
 
         public void RemoveCoins(int amount)
@@ -63,7 +65,7 @@ namespace SgLib
             PlayerPrefs.SetInt(PPK_COINS, Coins);
 
             // Fire event
-            CoinsUpdated(Coins);
+            // CoinsUpdated(Coins);
         }
     }
 }

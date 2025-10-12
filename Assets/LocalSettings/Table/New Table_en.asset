@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 27455885312
-    m_Localized: CONTINUE?
+    m_Localized: CONTINUE
     m_Metadata:
       m_Items: []
   - m_Id: 122582700032
@@ -108,6 +108,14 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 28258838090051584
     m_Localized: GAME OVER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32848058445914112
+    m_Localized: COINS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33023030200033280
+    m_Localized: CLOSE
     m_Metadata:
       m_Items: []
   references:

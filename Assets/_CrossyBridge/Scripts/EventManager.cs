@@ -18,4 +18,8 @@ public class EventManager
     public static UnityEvent<Vector3> OnSetCameraByPlayer = new UnityEvent<Vector3>();
 
     public static UnityEvent<int> OnPlaneTrigger = new UnityEvent<int>();
+
+    public static UnityEvent<int> OnCoinAdding = new UnityEvent<int>();
+
+    public static UnityEvent<GameObject> OnNewCanvasOpening = new UnityEvent<GameObject>();
 }

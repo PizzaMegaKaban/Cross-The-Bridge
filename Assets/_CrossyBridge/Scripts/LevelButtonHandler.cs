@@ -12,8 +12,6 @@ public class LevelButtonHandler : MonoBehaviour
     {
         PlayerPrefs.SetInt("MovingPlanesInLevel", level == -1 ? -1 : level + PlayerPrefs.GetInt("DeltaPlatesForLevel", 2));
         string sceneName = "Level" + level.ToString();
-        Debug.Log($"New level!!! {sceneName}");
-        // SceneManager.LoadScene(sceneName);
         gameManager.SelectLevel(level, true);
         gameManager.RestartGame(0f);
         levelSelect.SetActive(false);

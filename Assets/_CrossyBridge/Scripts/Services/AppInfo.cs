@@ -39,15 +39,25 @@ public class AppInfo : MonoBehaviour
 
     public string FACEBOOK_ID = "[YOUR_FACEBOOK_PAGE_ID]";
 
-    public string TWITTER_NAME = "[YOUR_TWITTER_PAGE_NAME]";
+    public string TELEGRAM_NAME = "[YOUR_TWITTER_PAGE_NAME]";
 
-    public string SUPPORT_EMAIL = "[YOUR_SUPPORT_EMAIL]";
+    public string X_NAME = "[YOUR_TWITTER_PAGE_NAME]";
+
+    public string SUPPORT_EMAIL = "44gametech@gmail.com";
+
+    public string SUPPORT_EMAIL_SUBJECT = "Crossy%20Bridge%20response";
 
     [HideInInspector]
     public string FACEBOOK_LINK = "https://facebook.com/";
 
     [HideInInspector]
-    public string TWITTER_LINK = "https://twitter.com/";
+    public string X_LINK = "https://x.com/";
+
+    [HideInInspector]
+    public string GMAIL_LINK = "mailto:{0}?Subject={1}";
+
+    [HideInInspector]
+    public string TELEGRAM_LINK = "https://t.me/";
 
     [Header("Set the target frame rate, pass -1 to use platform default frame rate")]
     public int targetFrameRate = 60;
@@ -72,7 +82,7 @@ public class AppInfo : MonoBehaviour
             if (clearPlayerPrefs)
             { 
                 PlayerPrefs.DeleteAll();
-                Debug.Log("\n\n\n");
+                // Debug.Log("\n\n\n");
                 Debug.Log("***********************************");
                 Debug.Log("ATTENTION: PlayerPrefs was cleared!");
                 Debug.Log("***********************************");
@@ -88,8 +98,10 @@ public class AppInfo : MonoBehaviour
         PLAYSTORE_LINK += BUNDLE_ID;
         APPSTORE_SHARE_LINK += APPSTORE_ID;
         PLAYSTORE_SHARE_LINK += BUNDLE_ID;
-        FACEBOOK_LINK += FACEBOOK_ID;
-        TWITTER_LINK += TWITTER_NAME;
+        //FACEBOOK_LINK += FACEBOOK_ID;
+        //X_LINK += X_NAME;
+        //TELEGRAM_LINK += TELEGRAM_NAME;
+        GMAIL_LINK = string.Format(GMAIL_LINK, SUPPORT_EMAIL, SUPPORT_EMAIL_SUBJECT);
 
         Application.targetFrameRate = targetFrameRate;
     }

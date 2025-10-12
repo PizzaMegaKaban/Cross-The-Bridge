@@ -34,7 +34,8 @@ namespace SgLib
 
             congratsText.SetActive(false);
             reward.SetActive(false);
-            sunburst.SetActive(false);
+            // TODO раскомментировать
+            // sunburst.SetActive(false);
             closeButton.SetActive(false);
 
             animatedGiftBox.gameObject.SetActive(true);
@@ -76,7 +77,8 @@ namespace SgLib
 
             SoundManager.Instance.PlaySound(SoundManager.Instance.rewarded);
             congratsText.SetActive(true);
-            sunburst.SetActive(true);
+            // TODO раскомментировать
+            // sunburst.SetActive(true);
 
             reward.GetComponent<Animator>().SetTrigger("Reward");
 
